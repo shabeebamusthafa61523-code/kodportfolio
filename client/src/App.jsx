@@ -21,96 +21,44 @@ const Reveal = ({ children, delay = 0, y = 48, className = "" }) => (
   </motion.div>
 );
 
-// ── Two-Line Responsive Ticker Component ─────────────────────────────────────
-const Ticker = ({ items, C }) => {
-  // Stagger items for the second track so different disciplines scroll simultaneously
-  const itemsLine2 = [...items.slice(3), ...items.slice(0, 3)];
-
-  return (
-    <div
-      className="overflow-hidden whitespace-nowrap border-y select-none"
+// ── Single-Line Seamless Responsive Ticker Component ─────────────────────────
+const Ticker = ({ items, C }) => (
+  <div
+    className="overflow-hidden whitespace-nowrap border-y py-3.5 select-none"
+    style={{ borderColor: C.border, background: "transparent" }}
+  >
+    <motion.div
       style={{
-        borderColor: C.border,
-        background: "transparent",
-        display: "flex",
-        flexDirection: "column",
-        gap: "0.55rem",
-        padding: "0.85rem 0"
+        display: "inline-flex",
+        gap: "clamp(1.5rem, 3.5vw, 3.5rem)",
+        width: "max-content",
+        willChange: "transform"
       }}
+      animate={{ x: ["0%", "-50%"] }}
+      transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
     >
-      {/* Line 1: Glides Left */}
-      <div style={{ overflow: "hidden", display: "flex", width: "100%" }}>
-        <motion.div
+      {[...items, ...items].map((item, i) => (
+        <span
+          key={i}
           style={{
+            fontSize: "clamp(0.72rem, 1.6vw, 0.85rem)",
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+            fontWeight: 600,
+            color: C.dim,
             display: "inline-flex",
-            gap: "clamp(1.5rem, 3.5vw, 3.5rem)",
-            width: "max-content",
-            willChange: "transform"
+            alignItems: "center"
           }}
-          animate={{ x: ["0%", "-50%"] }}
-          transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
         >
-          {[...items, ...items, ...items].map((item, i) => (
-            <span
-              key={`l1-${i}`}
-              style={{
-                fontSize: "clamp(0.72rem, 1.6vw, 0.85rem)",
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                fontWeight: 600,
-                color: C.dim,
-                display: "inline-flex",
-                alignItems: "center"
-              }}
-            >
-              {item}
-              <span style={{ margin: "0 clamp(0.75rem, 1.8vw, 1.5rem)", color: i % 2 === 0 ? C.acid : C.blue }}>
-                ✦
-              </span>
-            </span>
-          ))}
-        </motion.div>
-      </div>
-
-      {/* Subtle Divider Line Between the Two Tickers */}
-      <div style={{ height: "1px", width: "100%", background: C.border, opacity: 0.4 }} />
-
-      {/* Line 2: Glides Right (Reverse Direction) */}
-      <div style={{ overflow: "hidden", display: "flex", width: "100%" }}>
-        <motion.div
-          style={{
-            display: "inline-flex",
-            gap: "clamp(1.5rem, 3.5vw, 3.5rem)",
-            width: "max-content",
-            willChange: "transform"
-          }}
-          animate={{ x: ["-50%", "0%"] }}
-          transition={{ duration: 26, repeat: Infinity, ease: "linear" }}
-        >
-          {[...itemsLine2, ...itemsLine2, ...itemsLine2].map((item, i) => (
-            <span
-              key={`l2-${i}`}
-              style={{
-                fontSize: "clamp(0.72rem, 1.6vw, 0.85rem)",
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                fontWeight: 600,
-                color: C.dim,
-                display: "inline-flex",
-                alignItems: "center"
-              }}
-            >
-              {item}
-              <span style={{ margin: "0 clamp(0.75rem, 1.8vw, 1.5rem)", color: i % 2 === 0 ? C.blue : C.acid }}>
-                ✦
-              </span>
-            </span>
-          ))}
-        </motion.div>
-      </div>
-    </div>
-  );
-};
+          {item}
+          <span style={{ margin: "0 clamp(0.75rem, 1.8vw, 1.5rem)", color: i % 2 === 0 ? C.acid : C.blue }}>
+            ✦
+          </span>
+        </span>
+      ))}
+    </motion.div>
+  </div>
+);
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 const tickerItems = [
@@ -1199,32 +1147,9 @@ export default function Portfolio() {
               <a href="#contact" style={{ fontSize: "0.82rem", color: C.dim, letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600 }}>Contact</a>
             </nav>
 
-            {/* Mobile Hamburger Toggle Button (Moved before Theme Toggle on responsive) */}
-            <button
-              onClick={() => setMobileMenuOpen((prev) => !prev)}
-              className="mobile-menu-btn"
-              aria-label="Toggle Navigation Menu"
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                width: 38,
-                height: 38,
-                borderRadius: "10px",
-                background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.06)",
-                border: `1px solid ${C.border}`,
-                color: C.text,
-                cursor: "pointer",
-                transition: "all 0.2s",
-                flexShrink: 0
-              }}
-            >
-              {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
-            </button>
-
             {/* Theme Toggle Button */}
             <button
               onClick={toggleTheme}
-              className="theme-toggle-btn"
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -1248,7 +1173,6 @@ export default function Portfolio() {
 
             <a
               href="#contact"
-              className="lets-talk-btn"
               style={{
                 fontSize: "clamp(0.72rem, 1.8vw, 0.82rem)",
                 color: "#000",
@@ -1265,6 +1189,27 @@ export default function Portfolio() {
             >
               Let’s Talk
             </a>
+
+            {/* Mobile Hamburger Toggle Button */}
+            <button
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
+              className="mobile-menu-btn"
+              aria-label="Toggle Navigation Menu"
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                width: 38,
+                height: 38,
+                borderRadius: "10px",
+                background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.06)",
+                border: `1px solid ${C.border}`,
+                color: C.text,
+                cursor: "pointer",
+                transition: "all 0.2s"
+              }}
+            >
+              {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
           </div>
         </header>
 
