@@ -1199,9 +1199,32 @@ export default function Portfolio() {
               <a href="#contact" style={{ fontSize: "0.82rem", color: C.dim, letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600 }}>Contact</a>
             </nav>
 
+            {/* Mobile Hamburger Toggle Button (Moved before Theme Toggle on responsive) */}
+            <button
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
+              className="mobile-menu-btn"
+              aria-label="Toggle Navigation Menu"
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                width: 38,
+                height: 38,
+                borderRadius: "10px",
+                background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.06)",
+                border: `1px solid ${C.border}`,
+                color: C.text,
+                cursor: "pointer",
+                transition: "all 0.2s",
+                flexShrink: 0
+              }}
+            >
+              {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
+
             {/* Theme Toggle Button */}
             <button
               onClick={toggleTheme}
+              className="theme-toggle-btn"
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -1225,6 +1248,7 @@ export default function Portfolio() {
 
             <a
               href="#contact"
+              className="lets-talk-btn"
               style={{
                 fontSize: "clamp(0.72rem, 1.8vw, 0.82rem)",
                 color: "#000",
@@ -1241,27 +1265,6 @@ export default function Portfolio() {
             >
               Let’s Talk
             </a>
-
-            {/* Mobile Hamburger Toggle Button */}
-            <button
-              onClick={() => setMobileMenuOpen((prev) => !prev)}
-              className="mobile-menu-btn"
-              aria-label="Toggle Navigation Menu"
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                width: 38,
-                height: 38,
-                borderRadius: "10px",
-                background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.06)",
-                border: `1px solid ${C.border}`,
-                color: C.text,
-                cursor: "pointer",
-                transition: "all 0.2s"
-              }}
-            >
-              {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
-            </button>
           </div>
         </header>
 
