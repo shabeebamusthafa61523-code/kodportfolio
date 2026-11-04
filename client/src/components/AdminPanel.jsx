@@ -5,6 +5,7 @@ import {
   Key, Check, AlertCircle, Layers, Film, Image as ImageIcon, Settings, LogOut, ArrowLeft, Shield, Sun, Moon, Crop
 } from 'lucide-react';
 import ImageCropModal from './ImageCropModal';
+import { apiUrl } from '../utils/api';
 
 export default function AdminPanel({
   isOpen,
@@ -126,7 +127,7 @@ export default function AdminPanel({
     if (type) formData.append('type', type);
 
     try {
-      const res = await fetch('/api/upload', {
+      const res = await fetch(apiUrl('/api/upload'), {
         method: 'POST',
         body: formData
       });
@@ -204,7 +205,7 @@ export default function AdminPanel({
       if (editingItem) {
         // Edit existing logo
         const id = editingItem._id || editingItem.id;
-        const res = await fetch(`/api/client-logos/${id}`, {
+        const res = await fetch(apiUrl(`/api/client-logos/${id}`), {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(logoForm)
@@ -220,7 +221,7 @@ export default function AdminPanel({
         showNotification(`Updated logo: ${logoForm.name}`);
       } else {
         // Add new logo
-        const res = await fetch('/api/client-logos', {
+        const res = await fetch(apiUrl('/api/client-logos'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(logoForm)
@@ -257,7 +258,7 @@ export default function AdminPanel({
     const id = logoItem._id || logoItem.id;
     if (id) {
       try {
-        await fetch(`/api/client-logos/${id}`, { method: 'DELETE' });
+        await fetch(apiUrl(`/api/client-logos/${id}`), { method: 'DELETE' });
       } catch (err) {
         console.warn('Delete logo offline', err);
       }
@@ -278,7 +279,7 @@ export default function AdminPanel({
       if (editingItem) {
         // Edit existing reel
         const id = editingItem._id || editingItem.id;
-        const res = await fetch(`/api/reels/${id}`, {
+        const res = await fetch(apiUrl(`/api/reels/${id}`), {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(reelForm)
@@ -294,7 +295,7 @@ export default function AdminPanel({
         showNotification(`Updated reel: ${reelForm.title}`);
       } else {
         // Add new reel
-        const res = await fetch('/api/reels', {
+        const res = await fetch(apiUrl('/api/reels'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(reelForm)
@@ -334,7 +335,7 @@ export default function AdminPanel({
     const id = reelItem._id || reelItem.id;
     if (id) {
       try {
-        await fetch(`/api/reels/${id}`, { method: 'DELETE' });
+        await fetch(apiUrl(`/api/reels/${id}`), { method: 'DELETE' });
       } catch (err) {
         console.warn('Delete reel offline', err);
       }
@@ -355,7 +356,7 @@ export default function AdminPanel({
       if (editingItem) {
         // Edit existing poster
         const id = editingItem._id || editingItem.id;
-        const res = await fetch(`/api/posters/${id}`, {
+        const res = await fetch(apiUrl(`/api/posters/${id}`), {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(posterForm)
@@ -371,7 +372,7 @@ export default function AdminPanel({
         showNotification('Poster updated.');
       } else {
         // Add new poster
-        const res = await fetch('/api/posters', {
+        const res = await fetch(apiUrl('/api/posters'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(posterForm)
@@ -408,7 +409,7 @@ export default function AdminPanel({
     const id = posterItem._id || posterItem.id;
     if (id) {
       try {
-        await fetch(`/api/posters/${id}`, { method: 'DELETE' });
+        await fetch(apiUrl(`/api/posters/${id}`), { method: 'DELETE' });
       } catch (err) {
         console.warn('Delete poster offline', err);
       }
@@ -430,7 +431,7 @@ export default function AdminPanel({
     }
 
     try {
-      const res = await fetch('/api/admin/auth/change-pin', {
+      const res = await fetch(apiUrl('/api/admin/auth/change-pin'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ currentPin: pinForm.currentPin, newPin: pinForm.newPin })
@@ -451,7 +452,7 @@ export default function AdminPanel({
     if (!window.confirm('Reset ALL partner logos, reels, and posters to factory defaults?')) return;
 
     try {
-      const res = await fetch('/api/admin/auth/reset-defaults', { method: 'POST' });
+      const res = await fetch(apiUrl('/api/admin/auth/reset-defaults'), { method: 'POST' });
       const data = await res.json();
       if (res.ok) {
         showNotification(data.message);

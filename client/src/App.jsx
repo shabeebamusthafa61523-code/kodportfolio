@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import AdminPinModal from "./components/AdminPinModal";
 import AdminPanel from "./components/AdminPanel";
+import { apiUrl } from "./utils/api";
 
 // ── Reusable Reveal Animation ────────────────────────────────────────────────
 const Reveal = ({ children, delay = 0, y = 48, className = "" }) => (
@@ -577,28 +578,28 @@ export default function Portfolio() {
 
   // Fetch dynamic content from server on mount
   useEffect(() => {
-    fetch('/api/client-logos')
+    fetch(apiUrl('/api/client-logos'))
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) setDynamicLogos(data);
       })
       .catch(() => {});
 
-    fetch('/api/reels')
+    fetch(apiUrl('/api/reels'))
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) setDynamicReels(data);
       })
       .catch(() => {});
 
-    fetch('/api/posters')
+    fetch(apiUrl('/api/posters'))
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) setDynamicPosters(data);
       })
       .catch(() => {});
 
-    fetch('/api/showcases')
+    fetch(apiUrl('/api/showcases'))
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) setDynamicShowcases(data);
@@ -776,7 +777,7 @@ export default function Portfolio() {
     };
 
     try {
-      await fetch("/api/leads", {
+      await fetch(apiUrl("/api/leads"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)

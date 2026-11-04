@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Phone, Instagram, Globe, Copy, Check, Send } from 'lucide-react';
+import { apiUrl } from '../utils/api';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -56,7 +57,7 @@ export default function Contact() {
 
     try {
       // Send to MERN API
-      const res = await fetch('/api/leads', {
+      const res = await fetch(apiUrl('/api/leads'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

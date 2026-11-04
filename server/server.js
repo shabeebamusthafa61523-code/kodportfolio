@@ -39,7 +39,15 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // Middlewares
-app.use(cors({ origin: '*' }));
+// Dynamic CORS reflection allows Vercel production + preview deployment URLs with full credentials support
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  })
+);
 app.use(express.json());
 
 // Serve uploaded media statically

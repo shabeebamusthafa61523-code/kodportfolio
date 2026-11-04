@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { fallbackProjects } from '../data/fallbackData';
+import { apiUrl } from '../utils/api';
 
 export default function Works({ onSelectProject }) {
   const [projects, setProjects] = useState(fallbackProjects);
@@ -10,7 +11,7 @@ export default function Works({ onSelectProject }) {
   useEffect(() => {
     async function fetchProjects() {
       try {
-        const res = await fetch('/api/projects');
+        const res = await fetch(apiUrl('/api/projects'));
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data) && data.length > 0) {

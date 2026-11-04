@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, X, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
+import { apiUrl } from '../utils/api';
 
 export default function AdminPinModal({ isOpen, onClose, onSuccess, C, isLight }) {
   const [pin, setPin] = useState('');
@@ -30,7 +31,7 @@ export default function AdminPinModal({ isOpen, onClose, onSuccess, C, isLight }
     setErrorMsg('');
 
     try {
-      const res = await fetch('/api/admin/auth/verify-pin', {
+      const res = await fetch(apiUrl('/api/admin/auth/verify-pin'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pin: pinToTest })
