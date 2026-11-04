@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Environment & Sensitive Credentials
+.env
+*.env
+.env.local
+.env.*.local
+server/.env
+
+# Production Build Artefacts
+client/dist/
+dist/
+build/
+
+# Logs & Runtime Dumps
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temp upload processing caches
+server/uploads/temp_*
+server/uploads/*_nobg.png
+
+# OS & IDE Metadata
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

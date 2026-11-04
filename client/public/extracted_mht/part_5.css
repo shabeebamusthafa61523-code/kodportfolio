@@ -1,0 +1,116 @@
+@charset "utf-8";
+
+:root { --nl-vw: 433px; --nl-vh: 862px; }
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0px; padding: 0px; background: transparent; overflow: hidden; }
+
+body { display: flex; align-items: flex-end; justify-content: flex-end; height: 100vh; padding: 8px 18px 18px 8px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.5; color: rgb(244, 249, 249); -webkit-font-smoothing: antialiased; }
+
+.nl-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; width: max-content; max-width: calc(var(--nl-vw,100vw) - 26px); }
+
+button { font-family: inherit; cursor: pointer; }
+
+:focus-visible { outline: rgb(50, 230, 226) solid 2px; outline-offset: 2px; border-radius: 6px; }
+
+.nl-icon-btn { position: relative; flex: 0 0 auto; width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid transparent; background: transparent; color: rgb(213, 227, 230); transition: background 0.15s, color 0.15s; }
+
+.nl-icon-btn:hover { background: rgba(255, 255, 255, 0.08); color: rgb(244, 249, 249); }
+
+.nl-tap::after { content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: max(100%, 44px); height: max(100%, 44px); }
+
+@keyframes nl-rise { 
+  0% { opacity: 0; transform: translateY(10px) scale(0.97); }
+  100% { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition: none !important; }
+}
+
+.nl-popover { display: none; width: min(320px,calc(var(--nl-vw,100vw) - 26px)); max-height: calc(var(--nl-vh,100vh) - 90px); overflow-y: auto; background: linear-gradient(rgb(19, 40, 50) 0%, rgb(14, 30, 37) 100%); border: 1px solid rgba(255, 255, 255, 0.09); border-radius: 18px; transform-origin: right bottom; animation: 0.28s cubic-bezier(0.34, 1.4, 0.4, 1) 0s 1 normal both running nl-rise; }
+
+.nl-popover.open { display: block; }
+
+.nl-popover-head { display: flex; align-items: center; gap: 9px; padding: 13px 12px 5px 16px; }
+
+.nl-popover-icon { display: inline-flex; color: rgb(50, 230, 226); }
+
+.nl-popover-title { flex: 1 1 0%; font-size: 13.5px; font-weight: 700; letter-spacing: -0.01em; color: rgb(244, 249, 249); }
+
+.nl-popover-body { padding: 0px 16px 12px; }
+
+.nl-task { display: flex; align-items: center; gap: 10px; padding: 11px 0px; }
+
+.nl-task + .nl-task { border-top: 1px solid rgba(255, 255, 255, 0.06); }
+
+.nl-task-meta { flex: 1 1 0%; min-width: 0px; }
+
+.nl-task-title { font-size: 13.5px; font-weight: 650; color: rgb(244, 249, 249); }
+
+.nl-task-desc { font-size: 11.5px; color: rgb(169, 189, 194); }
+
+.nl-task-run { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; border: 1px solid rgba(50, 230, 226, 0.35); background: transparent; color: rgb(50, 230, 226); font-size: 12px; font-weight: 700; border-radius: 999px; padding: 6px 13px; transition: background 0.15s, transform 0.15s cubic-bezier(0.34, 1.4, 0.4, 1); }
+
+.nl-task-run:hover { background: rgba(5, 189, 186, 0.12); transform: translateY(-1px); }
+
+.nl-bar, .nl-mini { user-select: none; }
+
+.nl-bar { display: flex; align-items: center; gap: 2px; white-space: nowrap; border: 1px solid rgba(255, 255, 255, 0.09); background: linear-gradient(rgb(20, 43, 52), rgb(14, 30, 37)); border-radius: 999px; padding: 7px 8px 7px 14px; color: rgb(244, 249, 249); }
+
+.nl-logo { flex: 0 0 auto; margin-right: 8px; display: inline-flex; }
+
+.nl-status { display: inline-flex; align-items: center; gap: 5px; border: 0px; background: transparent; font-family: inherit; font-size: 12.5px; font-weight: 700; letter-spacing: 0.01em; color: rgb(251, 191, 36); padding: 6px 5px; border-radius: 8px; transition: background 0.15s; }
+
+.nl-status:hover, .nl-status[aria-expanded="true"] { background: rgba(251, 191, 36, 0.12); }
+
+.nl-tip { display: none; align-self: flex-start; width: min(300px,calc(var(--nl-vw,100vw) - 26px)); background: linear-gradient(rgb(19, 40, 50) 0%, rgb(14, 30, 37) 100%); border: 1px solid rgba(255, 255, 255, 0.09); border-radius: 14px; padding: 12px 14px; font-size: 12px; line-height: 1.5; color: rgb(213, 227, 230); animation: 0.2s cubic-bezier(0.34, 1.4, 0.4, 1) 0s 1 normal both running nl-rise; }
+
+.nl-tip.open { display: block; }
+
+.nl-tip a { display: flex; width: fit-content; align-items: center; gap: 4px; margin-top: 8px; color: rgb(50, 230, 226); text-decoration: none; font-weight: 650; }
+
+.nl-tip a:hover { text-decoration: underline; }
+
+.nl-sep { width: 1px; height: 18px; background: rgba(255, 255, 255, 0.09); margin: 0px 10px 0px 12px; flex: 0 0 auto; }
+
+.nl-btn { display: inline-flex; align-items: center; gap: 7px; text-decoration: none; border: 0px; background: transparent; color: rgb(213, 227, 230); font-family: inherit; font-size: 13px; font-weight: 600; padding: 8px 12px; border-radius: 999px; transition: background 0.15s, color 0.15s; }
+
+.nl-btn svg { color: rgb(50, 230, 226); }
+
+.nl-btn:hover { background: rgba(255, 255, 255, 0.07); color: rgb(244, 249, 249); }
+
+.nl-btn[aria-expanded="true"] { background: rgba(255, 255, 255, 0.1); color: rgb(244, 249, 249); }
+
+.nl-publish { display: inline-flex; align-items: center; gap: 7px; text-decoration: none; margin-left: 6px; background: rgb(5, 189, 186); color: rgb(2, 25, 27); font-size: 13px; font-weight: 700; padding: 8px 15px; border-radius: 999px; transition: background 0.15s, transform 0.15s cubic-bezier(0.34, 1.4, 0.4, 1); }
+
+.nl-publish:hover { background: rgb(50, 230, 226); transform: translateY(-1px); }
+
+.nl-min { margin-left: 6px; }
+
+.nl-bar, .nl-mini { min-height: 52px; }
+
+.nl-mini { display: none; align-items: center; gap: 2px; border: 1px solid rgba(255, 255, 255, 0.09); background: linear-gradient(rgb(20, 43, 52), rgb(14, 30, 37)); border-radius: 999px; padding: 5px 5px 5px 13px; cursor: pointer; }
+
+.nl-mini-state .nl-mini { display: flex; }
+
+.nl-mini-state .nl-bar, .nl-mini-state .nl-popover, .nl-mini-state .nl-tip { display: none; }
+
+.nl-mini-brand { display: inline-flex; align-items: center; gap: 7px; padding-right: 8px; }
+
+.nl-mini-lock { display: inline-flex; color: rgb(251, 191, 36); }
+
+.nl-narrow .nl-shrinks { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+.nl-narrow .nl-status { gap: 0px; }
+
+.nl-narrow .nl-bar { padding: 6px 6px 6px 10px; }
+
+.nl-narrow .nl-logo { margin-right: 6px; }
+
+.nl-narrow .nl-sep { margin: 0px 6px 0px 8px; }
+
+.nl-narrow .nl-btn { padding: 8px 9px; }
+
+.nl-narrow .nl-publish { margin-left: 4px; padding: 8px 11px; }

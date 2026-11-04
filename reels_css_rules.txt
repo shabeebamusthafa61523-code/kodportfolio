@@ -1,0 +1,54 @@
+.2em; text-transform: uppercase; }
+
+.posts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 8vh; }
+
+.post { display: block; text-decoration: none; color: rgb(17, 17, 17); background: rgb(246, 244, 234); border-radius: 12px; padding: 10px; box-shadow: rgba(0, 0, 0, 0.667) 0px 24px 50px; transition: transform 0.4s; transform: rotate(var(--r,0deg)); }
+
+.post:nth-child(1) { --r: -3deg; }
+
+.post:nth-child(2) { --r: 2deg; margin-top: 26px; }
+
+.post:nth-child(3) { --r: -2deg; }
+
+.post:nth-child(4) { --r: 3deg; margin-top: 26px; }
+
+.post:hover { transform: rotate(0deg) translateY(-10px) scale(1.03); }
+
+.ph-h { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; padding: 2px 2px 8px; }
+
+.ph-h i { width: 24px; height: 24px; border-radius: 50%; background: var(--bg); color: var(--cream); font: 10px / 24px Inter; text-align: center; }
+
+.vid { aspect-ratio: 4 / 5; border-radius: 6px; background: radial-gradient(circle at 30% 20%,#4d4513,var(--bg2) 60%,#050505); display: grid; place-items: center; position: relative; color: var(--cream); }
+
+.vid::after { content: "▶"; width: 54px; height: 54px; border-radius: 50%; background: var(--cream); color: var(--bg); display: grid; place-items: center; padding-left: 4px; }
+
+.vid b { position: absolute; left: 12px; bottom: 10px; font-family: Anton; font-weight: 400; font-size: 26px; text-transform: uppercase; }
+
+.ph-f { display: flex; justify-content: space-between; padding: 8px 2px 2px; font-size: 15px; }
+
+.posts { grid-template-columns: 1fr 1fr; }
+
+.vid { aspect-ratio: 9 / 16; background-size: cover; background-position: center center; }
+
+.vid::after { display: none; }
+
+.post { padding: 8px; }
+
+.post:nth-child(5) { --r: 2deg; }
+
+.post:nth-child(6) { --r: -3deg; margin-top: 26px; }
+
+.post:nth-child(7) { --r: 3deg; }
+
+.post:nth-child(8) { --r: -2deg; margin-top: 26px; }
+
+.posts { display: flex; gap: 22px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 20px 14px 40px; margin-inline: -14px; scrollbar-width: thin; scrollbar-color: var(--cream) transparent; }
+
+.post { flex: 0 0 clamp(210px, 23%, 280px); scroll-snap-align: start; }
+
+.vid { background-color: rgb(10, 10, 10); }
+
+.post:nth-child(n) { margin-top: 0px; }
+
+.post:nth-child(2n) { margin-top: 18px; }
+

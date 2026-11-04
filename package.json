@@ -1,0 +1,22 @@
+{
+  "name": "kodbrand-mern-monorepo",
+  "version": "1.0.0",
+  "description": "KODBRAND — Creative Advertising & Brand Solutions (Full MERN Stack)",
+  "scripts": {
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "build:client": "cd client && npm run build",
+    "seed": "cd server && node -e \"require('./routes/projects')\"",
+    "start": "cd server && npm start"
+  },
+  "keywords": [
+    "mern",
+    "react",
+    "mongodb",
+    "express",
+    "portfolio",
+    "kodbrand"
+  ],
+  "author": "KODBRAND",
+  "license": "ISC"
+}
