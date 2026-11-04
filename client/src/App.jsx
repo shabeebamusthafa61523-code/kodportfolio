@@ -1772,7 +1772,6 @@ export default function Portfolio() {
                     {s.desc}
                   </p>
                 </div>
-                <span className="svc-arrow" style={{ fontSize: "1.5rem", transition: "0.3s" }}>→</span>
               </div>
             </Reveal>
           ))}
