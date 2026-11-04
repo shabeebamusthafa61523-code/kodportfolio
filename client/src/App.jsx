@@ -24,8 +24,14 @@ const Reveal = ({ children, delay = 0, y = 48, className = "" }) => (
 // ── Single-Line Seamless Responsive Ticker Component ─────────────────────────
 const Ticker = ({ items, C }) => (
   <div
-    className="overflow-hidden whitespace-nowrap border-y py-3.5 select-none"
-    style={{ borderColor: C.border, background: "transparent" }}
+    className="overflow-hidden whitespace-nowrap border-y py-3 select-none"
+    style={{
+      borderColor: C.border,
+      background: "transparent",
+      width: "100%",
+      maxWidth: "100vw",
+      overflow: "hidden"
+    }}
   >
     <motion.div
       style={{
@@ -336,7 +342,10 @@ const ScrollSlidingShowcase = ({ showcases, allPosters, C, isLight, onPosterClic
       style={{
         position: "relative",
         height: itemCount > 5 ? "320vh" : "250vh", // Dynamic pinned scroll track
-        background: "transparent"
+        background: "transparent",
+        width: "100%",
+        maxWidth: "100vw",
+        overflowX: "clip"
       }}
     >
       {/* Pinned Sticky Stage */}
@@ -349,6 +358,8 @@ const ScrollSlidingShowcase = ({ showcases, allPosters, C, isLight, onPosterClic
           flexDirection: "column",
           justifyContent: "center",
           overflow: "hidden",
+          width: "100%",
+          maxWidth: "100vw",
           padding: "2rem 0"
         }}
       >
@@ -356,18 +367,26 @@ const ScrollSlidingShowcase = ({ showcases, allPosters, C, isLight, onPosterClic
         <div
           style={{
             position: "absolute",
-            top: "45%",
-            left: "-10%",
-            width: "120%",
-            height: "2px",
-            background: `linear-gradient(90deg, transparent 0%, ${C.acid}33 30%, ${C.acid} 70%, transparent 100%)`,
-            transform: "rotate(-6deg)",
+            inset: 0,
+            overflow: "hidden",
             pointerEvents: "none",
-            filter: "blur(0.8px)",
-            opacity: isLight ? 0.35 : 0.7,
             zIndex: 1
           }}
-        />
+        >
+          <div
+            style={{
+              position: "absolute",
+              top: "45%",
+              left: "-5%",
+              width: "110%",
+              height: "2px",
+              background: `linear-gradient(90deg, transparent 0%, ${C.acid}33 30%, ${C.acid} 70%, transparent 100%)`,
+              transform: "rotate(-6deg)",
+              filter: "blur(0.8px)",
+              opacity: isLight ? 0.35 : 0.7
+            }}
+          />
+        </div>
 
 
         {/* Sliding Mockup Cards Stage */}
@@ -699,13 +718,24 @@ export default function Portfolio() {
 
   const isLight = theme === "light";
 
+  // Mobile viewport detection to prevent horizontal translations on small screens
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" ? window.innerWidth <= 768 : false
+  );
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   // Scroll animations for logo transition from Hero into fixed Navbar
   const { scrollY } = useScroll();
 
   // Hero Logo interpolations (scales down and lifts towards top-left, floating OVER navbar)
   const heroLogoScale = useTransform(scrollY, [0, 220], [1, 0.22]);
   const heroLogoY = useTransform(scrollY, [0, 220], [0, -200]);
-  const heroLogoX = useTransform(scrollY, [0, 220], [0, -35]);
+  const heroLogoX = useTransform(scrollY, [0, 220], [0, isMobile ? 0 : -35]);
   const heroLogoOpacity = useTransform(scrollY, [160, 230], [1, 0]);
 
   // Navbar Logo interpolations (fades in and scales into view as hero logo docks)
@@ -820,7 +850,11 @@ export default function Portfolio() {
       style={{
         backgroundColor: C.bg,
         color: C.text,
-        transition: "background-color 0.4s ease, color 0.4s ease"
+        transition: "background-color 0.4s ease, color 0.4s ease",
+        width: "100%",
+        maxWidth: "100vw",
+        overflowX: "clip",
+        position: "relative"
       }}
     >
       <div style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
@@ -1004,6 +1038,12 @@ export default function Portfolio() {
             color: #000;
           }
 
+          html, body, #root {
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: clip;
+          }
+
           .hero-section {
             min-height: 100vh;
             display: flex;
@@ -1014,15 +1054,19 @@ export default function Portfolio() {
             z-index: 60;
             pointer-events: none;
             background: transparent;
+            overflow: hidden;
+            width: 100%;
+            max-width: 100vw;
+            box-sizing: border-box;
           }
 
           @media (max-width: 1024px) {
             section { padding-left: 5vw !important; padding-right: 5vw !important; }
             .hero-section {
-              min-height: 75vh !important;
-              justify-content: center !important;
-              padding-top: 125px !important;
-              padding-bottom: 50px !important;
+              min-height: auto !important;
+              justify-content: flex-start !important;
+              padding-top: 100px !important;
+              padding-bottom: 30px !important;
             }
             .svc-row { flex-direction: column !important; align-items: flex-start !important; gap: 1rem !important; }
             .cs-img-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
@@ -1031,22 +1075,22 @@ export default function Portfolio() {
           @media (max-width: 900px) {
             #about {
               grid-template-columns: 1fr !important;
-              gap: 2.5rem !important;
-              padding: 10vh 5vw !important;
+              gap: 2rem !important;
+              padding: clamp(2.5rem, 5vh, 4rem) 5vw !important;
             }
             #vision > div {
               grid-template-columns: 1fr !important;
-              gap: 2.5rem !important;
+              gap: 2rem !important;
             }
             #vision {
-              padding: 10vh 5vw !important;
+              padding: clamp(2.5rem, 5vh, 4rem) 5vw !important;
             }
             #contact > div {
               grid-template-columns: 1fr !important;
-              gap: 3rem !important;
+              gap: 2.5rem !important;
             }
             #contact {
-              padding: 10vh 5vw !important;
+              padding: clamp(2.5rem, 5vh, 4rem) 5vw !important;
             }
             .desktop-nav {
               display: none !important;
@@ -1067,22 +1111,27 @@ export default function Portfolio() {
             .hero-section {
               min-height: auto !important;
               justify-content: flex-start !important;
-              padding-top: 100px !important;
-              padding-bottom: 40px !important;
+              padding-top: 85px !important;
+              padding-bottom: 20px !important;
+              padding-left: 5vw !important;
+              padding-right: 5vw !important;
             }
             .hero-logo-img {
-              height: clamp(85px, 18vw, 130px) !important;
+              height: clamp(75px, 16vw, 110px) !important;
+              max-width: 100% !important;
             }
             .hero-text {
-              margin-top: 1.25rem !important;
-              font-size: 0.96rem !important;
-              line-height: 1.65 !important;
+              margin-top: 0.85rem !important;
+              font-size: 0.92rem !important;
+              line-height: 1.6 !important;
+              margin-bottom: 0 !important;
+              max-width: 100% !important;
             }
             .hero-ambient-glow {
-              width: 260px !important;
-              height: 260px !important;
-              top: 10% !important;
-              right: -15% !important;
+              width: 200px !important;
+              height: 200px !important;
+              top: 5% !important;
+              right: 0 !important;
             }
             .cs-img-grid { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
             .cs-img-slot { min-height: 260px !important; transform: none !important; }
@@ -1090,8 +1139,8 @@ export default function Portfolio() {
             .cs-header { flex-direction: column !important; align-items: flex-start !important; gap: 1rem !important; }
             .cs-logo-area { width: 110px; height: 110px; }
             .cs-sector { margin-left: 0 !important; }
-            .trusted-layout { grid-template-columns: 1fr !important; gap: 3rem !important; }
-            .trusted-header { padding-right: 0 !important; border-right: none !important; border-bottom: 1px solid ${C.rule} !important; padding-bottom: 2rem !important; }
+            .trusted-layout { grid-template-columns: 1fr !important; gap: 2rem !important; }
+            .trusted-header { padding-right: 0 !important; border-right: none !important; border-bottom: 1px solid ${C.rule} !important; padding-bottom: 1.5rem !important; }
             .contact-form-row { grid-template-columns: 1fr !important; }
             .svc-num { font-size: 2.2rem !important; min-width: 3.2rem !important; }
             .fab-float { bottom: 16px !important; right: 16px !important; gap: 8px !important; }
@@ -1109,7 +1158,9 @@ export default function Portfolio() {
             top: 0,
             left: 0,
             width: "100%",
-            padding: "1rem clamp(1rem, 4vw, 6vw)",
+            maxWidth: "100vw",
+            boxSizing: "border-box",
+            padding: "0.85rem clamp(1rem, 4vw, 6vw)",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -1146,6 +1197,28 @@ export default function Portfolio() {
               <a href="#services" style={{ fontSize: "0.82rem", color: C.dim, letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600 }}>Services</a>
               <a href="#contact" style={{ fontSize: "0.82rem", color: C.dim, letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600 }}>Contact</a>
             </nav>
+
+            {/* Mobile Hamburger Toggle Button (appears first on mobile) */}
+            <button
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
+              className="mobile-menu-btn"
+              aria-label="Toggle Navigation Menu"
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                width: 38,
+                height: 38,
+                borderRadius: "10px",
+                background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.06)",
+                border: `1px solid ${C.border}`,
+                color: C.text,
+                cursor: "pointer",
+                transition: "all 0.2s",
+                flexShrink: 0
+              }}
+            >
+              {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
 
             {/* Theme Toggle Button */}
             <button
@@ -1189,27 +1262,6 @@ export default function Portfolio() {
             >
               Let’s Talk
             </a>
-
-            {/* Mobile Hamburger Toggle Button */}
-            <button
-              onClick={() => setMobileMenuOpen((prev) => !prev)}
-              className="mobile-menu-btn"
-              aria-label="Toggle Navigation Menu"
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                width: 38,
-                height: 38,
-                borderRadius: "10px",
-                background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.06)",
-                border: `1px solid ${C.border}`,
-                color: C.text,
-                cursor: "pointer",
-                transition: "all 0.2s"
-              }}
-            >
-              {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
-            </button>
           </div>
         </header>
 
@@ -1403,7 +1455,7 @@ export default function Portfolio() {
         <div className="rule" />
 
         {/* ── STRATEGIC ALLIANCES / TRUSTED BY ── */}
-        <section style={{ padding: "14vh 0", background: "transparent", overflow: "hidden" }}>
+        <section style={{ padding: "clamp(3.5rem, 8vh, 10vh) 0", background: "transparent", overflow: "hidden", width: "100%", maxWidth: "100vw", boxSizing: "border-box" }}>
           <div className="trusted-layout" style={{ display: "grid", gridTemplateColumns: "0.85fr 1.15fr", alignItems: "center", width: "100%" }}>
             <div className="trusted-header" style={{ padding: "0 6vw", borderRight: `1px solid ${C.rule}`, background: "transparent" }}>
               <Reveal>
@@ -1480,7 +1532,7 @@ export default function Portfolio() {
         <div className="rule" />
 
         {/* ── CLUSTERED AUTOSCROLLING REELS & SHORT-FORM VIDEO SHOWCASE ── */}
-        <section id="reels" style={{ padding: "14vh 0 10vh", background: "transparent", overflow: "hidden" }}>
+        <section id="reels" style={{ padding: "clamp(3.5rem, 8vh, 10vh) 0 clamp(2.5rem, 6vh, 8vh)", background: "transparent", overflow: "hidden", width: "100%", maxWidth: "100vw", boxSizing: "border-box" }}>
           <div style={{ padding: "0 6vw" }}>
             <Reveal>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1.5rem", marginBottom: "3.5rem" }}>
@@ -1708,7 +1760,7 @@ export default function Portfolio() {
         <div className="rule" />
 
         {/* ── VISUAL CAMPAIGNS HEADER ── */}
-        <section id="works" style={{ padding: "14vh 6vw 4vh", background: "transparent" }}>
+        <section id="works" style={{ padding: "clamp(3.5rem, 8vh, 10vh) 6vw 3vh", background: "transparent", width: "100%", maxWidth: "100vw", boxSizing: "border-box" }}>
           <Reveal>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "2rem", marginBottom: "2rem" }}>
               <div>
@@ -1738,7 +1790,7 @@ export default function Portfolio() {
         <div className="rule" />
 
         {/* ── SERVICES (WHAT WE DO) ── */}
-        <section id="services" style={{ padding: "14vh 6vw", background: "transparent" }}>
+        <section id="services" style={{ padding: "clamp(3.5rem, 8vh, 10vh) 6vw", background: "transparent", width: "100%", maxWidth: "100vw", boxSizing: "border-box" }}>
           <Reveal>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "5rem" }}>
               <h2
@@ -1798,7 +1850,7 @@ export default function Portfolio() {
         <div className="rule" />
 
         {/* ── EXPERTISE & TOOLS ── */}
-        <section id="expertise" style={{ padding: "14vh 6vw", background: "transparent" }}>
+        <section id="expertise" style={{ padding: "clamp(3.5rem, 8vh, 10vh) 6vw", background: "transparent", width: "100%", maxWidth: "100vw", boxSizing: "border-box" }}>
           <Reveal>
             <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: "clamp(2.5rem, 6vw, 5rem)", fontWeight: 400, lineHeight: 0.95, marginBottom: "1rem" }}>
               Expertise & <span style={{ fontStyle: "italic", color: C.acid }}>Tools</span>
@@ -1839,7 +1891,7 @@ export default function Portfolio() {
         <div className="rule" />
 
         {/* ── VISION & GOALS ── */}
-        <section id="vision" style={{ padding: "14vh 6vw", background: "transparent" }}>
+        <section id="vision" style={{ padding: "clamp(3.5rem, 8vh, 10vh) 6vw", background: "transparent", width: "100%", maxWidth: "100vw", boxSizing: "border-box" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4vw" }}>
             <Reveal>
               <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: "clamp(2.5rem, 6vw, 5.5rem)", lineHeight: 0.95, fontWeight: 400 }}>
@@ -1878,7 +1930,7 @@ export default function Portfolio() {
         <div className="rule" />
 
         {/* ── CONTACT & INQUIRY ── */}
-        <section id="contact" style={{ padding: "14vh 6vw", background: "transparent" }}>
+        <section id="contact" style={{ padding: "clamp(3.5rem, 8vh, 10vh) 6vw", background: "transparent", width: "100%", maxWidth: "100vw", boxSizing: "border-box" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5vw" }}>
             <Reveal>
               <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: "clamp(2.5rem, 6vw, 5.5rem)", lineHeight: 0.95, fontWeight: 400 }}>
@@ -2089,13 +2141,16 @@ export default function Portfolio() {
         {/* ── FOOTER ── */}
         <footer
           style={{
-            padding: "4rem 6vw",
+            padding: "3.5rem 6vw",
             borderTop: `1px solid ${C.rule}`,
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
             flexWrap: "wrap",
-            gap: "1.5rem"
+            gap: "1.5rem",
+            width: "100%",
+            maxWidth: "100vw",
+            boxSizing: "border-box"
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>

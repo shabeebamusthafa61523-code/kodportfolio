@@ -96,6 +96,9 @@ html {
   scroll-behavior: smooth;
   font-size: 16px;
   color-scheme: dark;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: clip;
 }
 
 [data-theme="light"] html {
@@ -107,8 +110,19 @@ body {
   background-color: var(--bg-body);
   color: var(--text-primary);
   line-height: 1.6;
-  overflow-x: hidden;
+  overflow-x: clip;
+  width: 100%;
+  max-width: 100vw;
   transition: background-color var(--transition-normal), color var(--transition-normal);
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: clip;
   position: relative;
 }
 
@@ -137,6 +151,23 @@ body::after {
   filter: blur(140px);
   z-index: -2;
   pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  body::before {
+    width: 260px;
+    height: 260px;
+    top: -50px;
+    left: 0;
+    filter: blur(80px);
+  }
+  body::after {
+    width: 220px;
+    height: 220px;
+    right: 0;
+    bottom: 5%;
+    filter: blur(80px);
+  }
 }
 
 /* Custom Scrollbar */
