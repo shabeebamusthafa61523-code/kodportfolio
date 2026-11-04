@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
+import { motion, useScroll, useTransform, useMotionValueEvent, AnimatePresence } from "framer-motion";
 import { 
   Mail, Phone, Instagram, Globe, Check, Copy, ArrowUp, Send, 
-  Sun, Moon, Heart, MessageCircle, Bookmark, Play, X, ChevronLeft, ChevronRight, Shield 
+  Sun, Moon, Heart, MessageCircle, Bookmark, Play, X, ChevronLeft, ChevronRight, Shield, Menu 
 } from "lucide-react";
 import AdminPinModal from "./components/AdminPinModal";
 import AdminPanel from "./components/AdminPanel";
@@ -356,9 +356,9 @@ const ScrollSlidingShowcase = ({ showcases, allPosters, C, isLight, onPosterClic
           <motion.div
             style={{
               display: "flex",
-              gap: "2.5rem",
-              paddingLeft: "6vw",
-              paddingRight: "6vw",
+              gap: "clamp(1.2rem, 3vw, 2.5rem)",
+              paddingLeft: "clamp(1.5rem, 5vw, 6vw)",
+              paddingRight: "clamp(1.5rem, 5vw, 6vw)",
               width: "max-content",
               x
             }}
@@ -378,7 +378,8 @@ const ScrollSlidingShowcase = ({ showcases, allPosters, C, isLight, onPosterClic
                   className={`scroll-mockup-card ${isActive ? "is-active" : ""}`}
                   style={{
                     aspectRatio: "4 / 5",
-                    height: "clamp(390px, 58vh, 540px)",
+                    height: "clamp(290px, 52vh, 520px)",
+                    maxWidth: "calc(100vw - 44px)",
                     width: "auto",
                     borderRadius: "18px",
                     background: "#111216",
@@ -559,6 +560,7 @@ export default function Portfolio() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [activeReel, setActiveReel] = useState(null);
   const [selectedPoster, setSelectedPoster] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // ── Dynamic Content State (Fetched from MongoDB API with default fallback) ──
   const [dynamicLogos, setDynamicLogos] = useState(logos);
@@ -1007,6 +1009,41 @@ export default function Portfolio() {
             .cs-img-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
             .cs-img-slot { min-height: 320px; }
           }
+          @media (max-width: 900px) {
+            #about {
+              grid-template-columns: 1fr !important;
+              gap: 2.5rem !important;
+              padding: 10vh 5vw !important;
+            }
+            #vision > div {
+              grid-template-columns: 1fr !important;
+              gap: 2.5rem !important;
+            }
+            #vision {
+              padding: 10vh 5vw !important;
+            }
+            #contact > div {
+              grid-template-columns: 1fr !important;
+              gap: 3rem !important;
+            }
+            #contact {
+              padding: 10vh 5vw !important;
+            }
+            .desktop-nav {
+              display: none !important;
+            }
+            .mobile-menu-btn {
+              display: flex !important;
+            }
+          }
+          @media (min-width: 901px) {
+            .mobile-menu-btn {
+              display: none !important;
+            }
+            .mobile-nav-drawer {
+              display: none !important;
+            }
+          }
           @media (max-width: 640px) {
             .hero-section {
               min-height: auto !important;
@@ -1036,6 +1073,11 @@ export default function Portfolio() {
             .cs-sector { margin-left: 0 !important; }
             .trusted-layout { grid-template-columns: 1fr !important; gap: 3rem !important; }
             .trusted-header { padding-right: 0 !important; border-right: none !important; border-bottom: 1px solid ${C.rule} !important; padding-bottom: 2rem !important; }
+            .contact-form-row { grid-template-columns: 1fr !important; }
+            .svc-num { font-size: 2.2rem !important; min-width: 3.2rem !important; }
+            .fab-float { bottom: 16px !important; right: 16px !important; gap: 8px !important; }
+            .fab-btn { width: 42px !important; height: 42px !important; }
+            footer { flex-direction: column !important; align-items: flex-start !important; gap: 1.5rem !important; }
           }
         `}</style>
 
@@ -1048,7 +1090,7 @@ export default function Portfolio() {
             top: 0,
             left: 0,
             width: "100%",
-            padding: "1.2rem 6vw",
+            padding: "1rem clamp(1rem, 4vw, 6vw)",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -1074,10 +1116,10 @@ export default function Portfolio() {
               cursor: "pointer"
             }}
           >
-            <img src={C.logoSrc} alt="KOD.BRAND" style={{ height: 40, width: "auto" }} />
+            <img src={C.logoSrc} alt="KOD.BRAND" style={{ height: "clamp(30px, 4vw, 40px)", width: "auto" }} />
           </motion.a>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "clamp(0.6rem, 2vw, 2rem)" }}>
             <nav style={{ display: "flex", gap: "2.2rem", alignItems: "center" }} className="desktop-nav">
               <a href="#about" style={{ fontSize: "0.82rem", color: C.dim, letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600 }}>About</a>
               <a href="#reels" style={{ fontSize: "0.82rem", color: C.dim, letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600 }}>Reels</a>
@@ -1093,40 +1135,122 @@ export default function Portfolio() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                width: 40,
-                height: 40,
+                width: 38,
+                height: 38,
                 borderRadius: "50%",
                 border: `1px solid ${C.border}`,
                 background: isLight ? "#ffffff" : "rgba(245,245,240,0.06)",
                 color: C.text,
                 cursor: "pointer",
                 boxShadow: `0 2px 8px rgba(0,0,0,${isLight ? "0.06" : "0.3"})`,
-                transition: "all 0.3s"
+                transition: "all 0.3s",
+                flexShrink: 0
               }}
               aria-label="Toggle Light and Dark Theme"
               title={`Switch to ${isLight ? "Dark" : "Light"} Mode`}
             >
-              {isLight ? <Moon size={18} /> : <Sun size={18} />}
+              {isLight ? <Moon size={16} /> : <Sun size={16} />}
             </button>
 
             <a
               href="#contact"
               style={{
-                fontSize: "0.82rem",
+                fontSize: "clamp(0.72rem, 1.8vw, 0.82rem)",
                 color: "#000",
                 background: C.acidBadge,
-                padding: "0.5rem 1.2rem",
+                padding: "0.45rem clamp(0.75rem, 2vw, 1.2rem)",
                 borderRadius: "20px",
                 fontWeight: 700,
                 letterSpacing: "0.05em",
                 textTransform: "uppercase",
-                boxShadow: `0 0 15px ${C.acidGlow}`
+                boxShadow: `0 0 15px ${C.acidGlow}`,
+                whiteSpace: "nowrap",
+                flexShrink: 0
               }}
             >
               Let’s Talk
             </a>
+
+            {/* Mobile Hamburger Toggle Button */}
+            <button
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
+              className="mobile-menu-btn"
+              aria-label="Toggle Navigation Menu"
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                width: 38,
+                height: 38,
+                borderRadius: "10px",
+                background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.06)",
+                border: `1px solid ${C.border}`,
+                color: C.text,
+                cursor: "pointer",
+                transition: "all 0.2s"
+              }}
+            >
+              {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
           </div>
         </header>
+
+        {/* ── Mobile Navigation Drawer ── */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              className="mobile-nav-drawer"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.25 }}
+              style={{
+                position: "fixed",
+                top: "62px",
+                left: 0,
+                width: "100%",
+                background: C.headerBg,
+                backdropFilter: "blur(20px)",
+                borderBottom: `1px solid ${C.border}`,
+                zIndex: 49,
+                padding: "1.5rem 6vw",
+                display: "flex",
+                flexDirection: "column",
+                gap: "1.2rem",
+                boxShadow: `0 20px 40px rgba(0,0,0,${isLight ? "0.1" : "0.5"})`
+              }}
+            >
+              {[
+                { href: "#about", label: "About Us" },
+                { href: "#reels", label: "Short-Form Reels" },
+                { href: "#works", label: "Visual Campaigns" },
+                { href: "#services", label: "What We Do" },
+                { href: "#expertise", label: "Expertise & Tools" },
+                { href: "#vision", label: "Vision & Goals" },
+                { href: "#contact", label: "Contact Us" }
+              ].map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  style={{
+                    fontSize: "1.05rem",
+                    fontWeight: 600,
+                    color: C.text,
+                    textDecoration: "none",
+                    padding: "0.4rem 0",
+                    borderBottom: `1px solid ${C.border}`,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center"
+                  }}
+                >
+                  <span>{link.label}</span>
+                  <span style={{ color: C.acid, fontSize: "0.85rem" }}>→</span>
+                </a>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* ── HERO ── */}
         <section
@@ -1786,7 +1910,7 @@ export default function Portfolio() {
                 style={{
                   background: C.surface,
                   border: `1px solid ${C.border}`,
-                  padding: "2.5rem",
+                  padding: "clamp(1.2rem, 4vw, 2.5rem)",
                   borderRadius: "6px",
                   boxShadow: `0 10px 30px rgba(0,0,0,${isLight ? "0.04" : "0.2"})`
                 }}
@@ -1829,7 +1953,7 @@ export default function Portfolio() {
                   </div>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
+                <div className="contact-form-row" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem", marginBottom: "1rem" }}>
                   <div>
                     <label style={{ display: "block", fontSize: "0.78rem", color: C.dim, marginBottom: "0.3rem", fontWeight: 500 }}>Name *</label>
                     <input

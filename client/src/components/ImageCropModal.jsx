@@ -163,7 +163,7 @@ export default function ImageCropModal({
           justifyContent: 'center',
           background: 'rgba(0, 0, 0, 0.82)',
           backdropFilter: 'blur(8px)',
-          padding: '1rem'
+          padding: 'clamp(0.5rem, 2vw, 1rem)'
         }}
       >
         <motion.div
@@ -179,6 +179,7 @@ export default function ImageCropModal({
             boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
             width: '100%',
             maxWidth: '680px',
+            maxHeight: '94vh',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden'
@@ -187,7 +188,7 @@ export default function ImageCropModal({
           {/* Header */}
           <div
             style={{
-              padding: '1.2rem 1.5rem',
+              padding: 'clamp(0.8rem, 2vw, 1.2rem) clamp(1rem, 2.5vw, 1.5rem)',
               borderBottom: `1px solid ${border}`,
               display: 'flex',
               alignItems: 'center',
@@ -210,7 +211,7 @@ export default function ImageCropModal({
                 <Crop size={18} />
               </div>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 600 }}>
+                <h3 style={{ margin: 0, fontSize: 'clamp(0.92rem, 2vw, 1.05rem)', fontWeight: 600 }}>
                   Crop & Frame {type === 'poster' ? 'Poster' : type === 'logo' ? 'Brand Logo' : type === 'reel' ? 'Video Thumbnail' : 'Image'}
                 </h3>
                 <span style={{ fontSize: '0.72rem', color: isLight ? '#666' : 'rgba(245,245,240,0.5)' }}>
@@ -239,7 +240,7 @@ export default function ImageCropModal({
             style={{
               position: 'relative',
               width: '100%',
-              height: '380px',
+              height: 'clamp(220px, 38vh, 380px)',
               background: '#050608',
               overflow: 'hidden'
             }}
@@ -266,11 +267,13 @@ export default function ImageCropModal({
           {/* Controls Bar */}
           <div
             style={{
-              padding: '1.2rem 1.5rem',
+              padding: 'clamp(0.8rem, 2vw, 1.2rem) clamp(1rem, 2.5vw, 1.5rem)',
               display: 'flex',
               flexDirection: 'column',
               gap: 12,
-              borderTop: `1px solid ${border}`
+              borderTop: `1px solid ${border}`,
+              overflowY: 'auto',
+              maxHeight: '35vh'
             }}
           >
             {/* Aspect Ratio Preset Tabs */}
@@ -359,13 +362,14 @@ export default function ImageCropModal({
           {/* Action Footer */}
           <div
             style={{
-              padding: '1rem 1.5rem',
+              padding: '0.85rem clamp(1rem, 2.5vw, 1.5rem)',
               background: isLight ? 'rgba(0,0,0,0.02)' : 'rgba(0,0,0,0.3)',
               borderTop: `1px solid ${border}`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              gap: 12
+              flexWrap: 'wrap',
+              gap: 10
             }}
           >
             <button
@@ -385,7 +389,7 @@ export default function ImageCropModal({
               Skip Crop & Use Original
             </button>
 
-            <div style={{ display: 'flex', gap: 10 }}>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               <button
                 type="button"
                 onClick={onClose}

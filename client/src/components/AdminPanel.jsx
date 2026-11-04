@@ -485,12 +485,14 @@ export default function AdminPanel({
       {/* ── Top Header Navigation Bar ── */}
       <header
         style={{
-          height: '72px',
-          padding: '0 clamp(1.2rem, 3vw, 3rem)',
+          minHeight: '64px',
+          padding: '0.75rem clamp(1rem, 2.5vw, 2.5rem)',
           borderBottom: `1px solid ${adminTheme.border}`,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '0.75rem',
           background: adminTheme.headerBg,
           backdropFilter: 'blur(20px)',
           flexShrink: 0,
@@ -498,11 +500,11 @@ export default function AdminPanel({
           transition: 'all 0.25s'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div
             style={{
-              width: 40,
-              height: 40,
+              width: 38,
+              height: 38,
               borderRadius: '12px',
               background: C.acidBadge,
               color: '#000',
@@ -510,7 +512,7 @@ export default function AdminPanel({
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: 900,
-              fontSize: '1.05rem',
+              fontSize: '1rem',
               boxShadow: `0 0 18px ${C.acidGlow}`,
               flexShrink: 0
             }}
@@ -522,7 +524,7 @@ export default function AdminPanel({
               <h1
                 style={{
                   margin: 0,
-                  fontSize: 'clamp(1.1rem, 2vw, 1.35rem)',
+                  fontSize: 'clamp(1rem, 2.5vw, 1.35rem)',
                   fontWeight: 700,
                   letterSpacing: '-0.02em',
                   fontFamily: "'Space Grotesk', 'Plus Jakarta Sans', sans-serif",
@@ -557,7 +559,7 @@ export default function AdminPanel({
         </div>
 
         {/* Global Action Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           {/* Light / Dark Mode Toggle Button */}
           {toggleTheme && (
             <button
@@ -567,19 +569,19 @@ export default function AdminPanel({
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 6,
-                padding: '0.55rem 0.95rem',
+                gap: 5,
+                padding: '0.5rem 0.85rem',
                 borderRadius: '10px',
                 background: isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)',
                 border: `1px solid ${isLight ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.14)'}`,
                 color: adminTheme.text,
-                fontSize: '0.8rem',
+                fontSize: '0.78rem',
                 fontWeight: 600,
                 cursor: 'pointer',
                 transition: 'all 0.2s'
               }}
             >
-              {isLight ? <Moon size={15} /> : <Sun size={15} />}
+              {isLight ? <Moon size={14} /> : <Sun size={14} />}
               <span>{isLight ? "Dark" : "Light"}</span>
             </button>
           )}
@@ -590,20 +592,20 @@ export default function AdminPanel({
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 7,
-              padding: '0.55rem 1.15rem',
+              gap: 6,
+              padding: '0.5rem 0.95rem',
               borderRadius: '10px',
               background: isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.06)',
               border: `1px solid ${isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.14)'}`,
               color: adminTheme.text,
-              fontSize: '0.8rem',
+              fontSize: '0.78rem',
               fontWeight: 600,
               cursor: 'pointer',
               transition: 'all 0.2s'
             }}
           >
-            <ArrowLeft size={15} />
-            <span>Back to Portfolio</span>
+            <ArrowLeft size={14} />
+            <span>Portfolio</span>
           </button>
 
           <button
@@ -612,19 +614,19 @@ export default function AdminPanel({
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 6,
-              padding: '0.55rem 1rem',
+              gap: 5,
+              padding: '0.5rem 0.85rem',
               borderRadius: '10px',
               background: 'rgba(255,77,77,0.12)',
               border: '1px solid rgba(255,77,77,0.25)',
               color: '#ff6b6b',
-              fontSize: '0.8rem',
+              fontSize: '0.78rem',
               fontWeight: 600,
               cursor: 'pointer',
               transition: 'all 0.2s'
             }}
           >
-            <LogOut size={15} />
+            <LogOut size={14} />
             <span>Lock</span>
           </button>
         </div>
@@ -634,7 +636,7 @@ export default function AdminPanel({
       {statusMsg && (
         <div
           style={{
-            padding: '0.7rem clamp(1.2rem, 3vw, 3rem)',
+            padding: '0.7rem clamp(1rem, 2.5vw, 2.5rem)',
             background: statusMsg.isError ? 'rgba(255,77,77,0.2)' : 'rgba(196,236,13,0.18)',
             color: statusMsg.isError ? '#ff6b6b' : C.acid,
             fontSize: '0.85rem',
@@ -654,9 +656,9 @@ export default function AdminPanel({
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '1rem',
-          padding: '1.2rem clamp(1.2rem, 3vw, 3rem)',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+          gap: '0.75rem',
+          padding: '0.85rem clamp(1rem, 2.5vw, 2.5rem)',
           background: adminTheme.subtleBg,
           borderBottom: `1px solid ${adminTheme.border}`,
           flexShrink: 0,
@@ -666,7 +668,7 @@ export default function AdminPanel({
         <div
           onClick={() => { setActiveTab('posters'); setIsAddOpen(false); }}
           style={{
-            padding: '0.85rem 1.25rem',
+            padding: '0.75rem 1rem',
             borderRadius: '12px',
             background: activeTab === 'posters' ? 'rgba(196,236,13,0.1)' : adminTheme.cardBg,
             border: activeTab === 'posters' ? `1px solid ${C.acid}` : `1px solid ${adminTheme.cardBorder}`,
@@ -675,18 +677,18 @@ export default function AdminPanel({
             transition: 'all 0.2s'
           }}
         >
-          <div style={{ fontSize: '0.72rem', color: adminTheme.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <div style={{ fontSize: '0.7rem', color: adminTheme.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Campaign Posters
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: C.acid, marginTop: 4, display: 'flex', alignItems: 'baseline', gap: 6 }}>
-            {posters.length} <span style={{ fontSize: '0.74rem', fontWeight: 500, color: adminTheme.textDim }}>in Exhibition</span>
+          <div style={{ fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', fontWeight: 800, color: C.acid, marginTop: 4, display: 'flex', alignItems: 'baseline', gap: 6 }}>
+            {posters.length} <span style={{ fontSize: '0.72rem', fontWeight: 500, color: adminTheme.textDim }}>in Exhibition</span>
           </div>
         </div>
 
         <div
           onClick={() => { setActiveTab('logos'); setIsAddOpen(false); }}
           style={{
-            padding: '0.85rem 1.25rem',
+            padding: '0.75rem 1rem',
             borderRadius: '12px',
             background: activeTab === 'logos' ? 'rgba(96,165,250,0.14)' : adminTheme.cardBg,
             border: activeTab === 'logos' ? '1px solid #60a5fa' : `1px solid ${adminTheme.cardBorder}`,
@@ -695,18 +697,18 @@ export default function AdminPanel({
             transition: 'all 0.2s'
           }}
         >
-          <div style={{ fontSize: '0.72rem', color: adminTheme.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <div style={{ fontSize: '0.7rem', color: adminTheme.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Trusted Alliances
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#60a5fa', marginTop: 4, display: 'flex', alignItems: 'baseline', gap: 6 }}>
-            {logos.length} <span style={{ fontSize: '0.74rem', fontWeight: 500, color: adminTheme.textDim }}>brand logos</span>
+          <div style={{ fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', fontWeight: 800, color: '#60a5fa', marginTop: 4, display: 'flex', alignItems: 'baseline', gap: 6 }}>
+            {logos.length} <span style={{ fontSize: '0.72rem', fontWeight: 500, color: adminTheme.textDim }}>brand logos</span>
           </div>
         </div>
 
         <div
           onClick={() => { setActiveTab('reels'); setIsAddOpen(false); }}
           style={{
-            padding: '0.85rem 1.25rem',
+            padding: '0.75rem 1rem',
             borderRadius: '12px',
             background: activeTab === 'reels' ? 'rgba(244,63,94,0.14)' : adminTheme.cardBg,
             border: activeTab === 'reels' ? '1px solid #f43f5e' : `1px solid ${adminTheme.cardBorder}`,
@@ -715,17 +717,17 @@ export default function AdminPanel({
             transition: 'all 0.2s'
           }}
         >
-          <div style={{ fontSize: '0.72rem', color: adminTheme.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <div style={{ fontSize: '0.7rem', color: adminTheme.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Video Presentations
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#f43f5e', marginTop: 4, display: 'flex', alignItems: 'baseline', gap: 6 }}>
-            {reels.length} <span style={{ fontSize: '0.74rem', fontWeight: 500, color: adminTheme.textDim }}>9:16 reels</span>
+          <div style={{ fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', fontWeight: 800, color: '#f43f5e', marginTop: 4, display: 'flex', alignItems: 'baseline', gap: 6 }}>
+            {reels.length} <span style={{ fontSize: '0.72rem', fontWeight: 500, color: adminTheme.textDim }}>9:16 reels</span>
           </div>
         </div>
 
         <div
           style={{
-            padding: '0.85rem 1.25rem',
+            padding: '0.75rem 1rem',
             borderRadius: '12px',
             background: adminTheme.cardBg,
             border: `1px solid ${adminTheme.cardBorder}`,
@@ -733,11 +735,11 @@ export default function AdminPanel({
             transition: 'all 0.2s'
           }}
         >
-          <div style={{ fontSize: '0.72rem', color: adminTheme.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <div style={{ fontSize: '0.7rem', color: adminTheme.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Backend Infrastructure
           </div>
-          <div style={{ fontSize: '0.98rem', fontWeight: 700, color: '#38bdf8', marginTop: 8 }}>
-            Atlas DB + Cloudinary CDN
+          <div style={{ fontSize: 'clamp(0.85rem, 2.5vw, 0.98rem)', fontWeight: 700, color: '#38bdf8', marginTop: 6 }}>
+            Atlas DB + Cloudinary
           </div>
         </div>
       </div>
@@ -747,9 +749,12 @@ export default function AdminPanel({
         style={{
           display: 'flex',
           borderBottom: `1px solid ${adminTheme.border}`,
-          padding: '0 clamp(1.2rem, 3vw, 3rem)',
+          padding: '0 clamp(0.75rem, 2.5vw, 2.5rem)',
           background: adminTheme.subtleBg,
           overflowX: 'auto',
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
           flexShrink: 0,
           transition: 'all 0.25s'
         }}
@@ -810,7 +815,7 @@ export default function AdminPanel({
         style={{
           flex: 1,
           overflowY: 'auto',
-          padding: '2.5rem clamp(1.2rem, 3vw, 3rem) 6rem'
+          padding: '1.5rem clamp(1rem, 2.5vw, 2.5rem) 5rem'
         }}
       >
         <div style={{ maxWidth: '1440px', margin: '0 auto' }}>
@@ -870,7 +875,7 @@ export default function AdminPanel({
                     background: adminTheme.cardBg,
                     border: `1px solid ${isLight ? 'rgba(0,0,0,0.12)' : C.acid}`,
                     borderRadius: '16px',
-                    padding: '1.5rem',
+                    padding: 'clamp(1rem, 3vw, 1.5rem)',
                     marginBottom: '2rem',
                     boxShadow: adminTheme.shadow
                   }}
@@ -878,7 +883,7 @@ export default function AdminPanel({
                   <h4 style={{ margin: '0 0 1rem', fontSize: '1rem', color: C.acid }}>
                     {editingItem ? 'Edit Partner Logo' : 'Add New Partner Logo'}
                   </h4>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
                     <div>
                       <label style={{ display: 'block', fontSize: '0.75rem', color: adminTheme.textMuted, marginBottom: 6 }}>
                         Partner Brand Name
@@ -895,27 +900,28 @@ export default function AdminPanel({
                       <label style={{ display: 'block', fontSize: '0.75rem', color: adminTheme.textMuted, marginBottom: 6 }}>
                         Logo Image (Upload File or Paste Image URL)
                       </label>
-                      <div style={{ display: 'flex', gap: 8 }}>
+                      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                         <input
                           type="text"
                           placeholder="/razain.png or https://..."
                           value={logoForm.src}
                           onChange={(e) => setLogoForm({ ...logoForm, src: e.target.value })}
-                          style={{ ...inputStyle, flex: 1 }}
+                          style={{ ...inputStyle, flex: '1 1 180px', minWidth: '160px' }}
                         />
                         <label
                           style={{
                             display: 'flex',
                             alignItems: 'center',
                             gap: 6,
-                            padding: '0 1rem',
+                            padding: '0.65rem 1rem',
                             borderRadius: '8px',
                             background: isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.1)',
                             border: `1px solid ${adminTheme.inputBorder}`,
                             color: adminTheme.text,
                             cursor: 'pointer',
                             fontSize: '0.75rem',
-                            fontWeight: 600
+                            fontWeight: 600,
+                            flexShrink: 0
                           }}
                         >
                           <Upload size={14} />
@@ -989,8 +995,8 @@ export default function AdminPanel({
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-                  gap: '1.2rem'
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(135px, 1fr))',
+                  gap: 'clamp(0.75rem, 1.8vw, 1.2rem)'
                 }}
               >
                 {logos.map((logoItem, idx) => {
@@ -1153,7 +1159,7 @@ export default function AdminPanel({
                     background: adminTheme.cardBg,
                     border: `1px solid ${isLight ? 'rgba(0,0,0,0.12)' : C.acid}`,
                     borderRadius: '16px',
-                    padding: '1.5rem',
+                    padding: 'clamp(1rem, 3vw, 1.5rem)',
                     marginBottom: '2rem',
                     boxShadow: adminTheme.shadow
                   }}
@@ -1221,27 +1227,28 @@ export default function AdminPanel({
                     <label style={{ display: 'block', fontSize: '0.75rem', color: adminTheme.textMuted, marginBottom: 6 }}>
                       Thumbnail Image Poster (Upload 9:16 Image or Paste Image URL)
                     </label>
-                    <div style={{ display: 'flex', gap: 8 }}>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                       <input
                         type="text"
                         placeholder="/reels/shiya-reel-1.jpg or https://..."
                         value={reelForm.thumb}
                         onChange={(e) => setReelForm({ ...reelForm, thumb: e.target.value })}
-                        style={{ ...inputStyle, flex: 1 }}
+                        style={{ ...inputStyle, flex: '1 1 180px', minWidth: '160px' }}
                       />
                       <label
                         style={{
                           display: 'flex',
                           alignItems: 'center',
                           gap: 6,
-                          padding: '0 1.2rem',
+                          padding: '0.65rem 1.1rem',
                           borderRadius: '8px',
                           background: isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.1)',
                           border: `1px solid ${adminTheme.inputBorder}`,
                           color: adminTheme.text,
                           cursor: 'pointer',
                           fontSize: '0.78rem',
-                          fontWeight: 600
+                          fontWeight: 600,
+                          flexShrink: 0
                         }}
                       >
                         <Upload size={14} />
@@ -1297,8 +1304,8 @@ export default function AdminPanel({
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-                  gap: '1.2rem'
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+                  gap: 'clamp(0.8rem, 2vw, 1.2rem)'
                 }}
               >
                 {reels.map((reel, idx) => (
@@ -1314,7 +1321,7 @@ export default function AdminPanel({
                       flexDirection: 'column'
                     }}
                   >
-                    <div style={{ position: 'relative', height: '220px', background: '#000' }}>
+                    <div style={{ position: 'relative', height: 'clamp(180px, 26vw, 220px)', background: '#000' }}>
                       <img src={reel.thumb} alt={reel.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       <div style={{ position: 'absolute', top: 8, left: 8, padding: '0.2rem 0.5rem', borderRadius: '12px', background: 'rgba(0,0,0,0.7)', fontSize: '0.65rem', fontWeight: 700, color: C.acid }}>
                         {reel.avatar}
@@ -1439,7 +1446,7 @@ export default function AdminPanel({
                     background: adminTheme.cardBg,
                     border: `1px solid ${isLight ? 'rgba(0,0,0,0.12)' : C.acid}`,
                     borderRadius: '16px',
-                    padding: '1.5rem',
+                    padding: 'clamp(1rem, 3vw, 1.5rem)',
                     marginBottom: '2rem',
                     boxShadow: adminTheme.shadow
                   }}
@@ -1448,7 +1455,7 @@ export default function AdminPanel({
                     {editingItem ? 'Edit Campaign Poster' : 'Add New Campaign Poster'}
                   </h4>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
                     <div>
                       <label style={{ display: 'block', fontSize: '0.75rem', color: adminTheme.textMuted, marginBottom: 6 }}>
                         Poster Title / Description
@@ -1493,27 +1500,28 @@ export default function AdminPanel({
                     <label style={{ display: 'block', fontSize: '0.75rem', color: adminTheme.textMuted, marginBottom: 6 }}>
                       Poster Image (Upload File or Paste Image URL)
                     </label>
-                    <div style={{ display: 'flex', gap: 8 }}>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                       <input
                         type="text"
                         placeholder="/ipas-3.jpeg or https://..."
                         value={posterForm.src}
                         onChange={(e) => setPosterForm({ ...posterForm, src: e.target.value })}
-                        style={{ ...inputStyle, flex: 1 }}
+                        style={{ ...inputStyle, flex: '1 1 180px', minWidth: '160px' }}
                       />
                       <label
                         style={{
                           display: 'flex',
                           alignItems: 'center',
                           gap: 6,
-                          padding: '0 1.2rem',
+                          padding: '0.65rem 1.1rem',
                           borderRadius: '8px',
                           background: isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.1)',
                           border: `1px solid ${adminTheme.inputBorder}`,
                           color: adminTheme.text,
                           cursor: 'pointer',
                           fontSize: '0.78rem',
-                          fontWeight: 600
+                          fontWeight: 600,
+                          flexShrink: 0
                         }}
                       >
                         <Upload size={14} />
@@ -1569,8 +1577,8 @@ export default function AdminPanel({
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))',
-                  gap: '1.2rem'
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+                  gap: 'clamp(0.8rem, 2vw, 1.2rem)'
                 }}
               >
                 {posters.map((poster, idx) => (
@@ -1586,7 +1594,7 @@ export default function AdminPanel({
                       flexDirection: 'column'
                     }}
                   >
-                    <div style={{ height: '220px', background: '#FFFFFF', padding: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ height: 'clamp(180px, 24vw, 220px)', background: '#FFFFFF', padding: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <img src={poster.src} alt={poster.alt || poster.title} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                     </div>
 
