@@ -615,6 +615,40 @@ export default function Portfolio() {
   const [dynamicPosters, setDynamicPosters] = useState(campaignPosters);
   const [dynamicShowcases, setDynamicShowcases] = useState(featuredShowcases);
 
+  // ── Reels Category Filter State ──
+  const [selectedReelCategory, setSelectedReelCategory] = useState('all');
+
+  const reelCategoriesWithVideos = useMemo(() => {
+    const counts = {};
+    dynamicReels.forEach((reel) => {
+      const cat = (reel.category || 'Short-Form Reels').trim();
+      counts[cat] = (counts[cat] || 0) + 1;
+    });
+
+    return Object.keys(counts).map((name) => ({
+      name,
+      count: counts[name]
+    })).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+  }, [dynamicReels]);
+
+  const filteredReels = useMemo(() => {
+    if (selectedReelCategory === 'all') return dynamicReels;
+    return dynamicReels.filter(
+      (r) =>
+        (r.category || 'Short-Form Reels').trim().toLowerCase() ===
+        selectedReelCategory.trim().toLowerCase()
+    );
+  }, [dynamicReels, selectedReelCategory]);
+
+  const carouselReels = useMemo(() => {
+    if (!filteredReels || filteredReels.length === 0) return [];
+    let list = [...filteredReels];
+    while (list.length < 6) {
+      list = [...list, ...filteredReels];
+    }
+    return [...list, ...list];
+  }, [filteredReels]);
+
   // ── Secret 5-Click Admin Access State ──
   const [logoClickCount, setLogoClickCount] = useState(0);
   const logoClickTimer = useRef(null);
@@ -1607,9 +1641,72 @@ export default function Portfolio() {
                     Dynamic <span style={{ fontStyle: "italic", color: C.acid }}>Video Production</span>
                   </h2>
                 </div>
-                <p style={{ color: C.dim, maxWidth: 420, fontSize: "0.95rem", lineHeight: 1.6 }}>
-                  High-engagement 9:16 vertical storytelling, social video series, and commercials engineered for algorithm momentum and viral watch-time.
-                </p>
+                <div style={{ maxWidth: 520 }}>
+                  <p style={{ color: C.dim, fontSize: "0.95rem", lineHeight: 1.6, marginBottom: "1.2rem" }}>
+                    High-engagement 9:16 vertical storytelling, social video series, and commercials engineered for algorithm momentum and viral watch-time.
+                  </p>
+
+                  {/* Dynamic Category Filter Pills */}
+                  {reelCategoriesWithVideos.length > 0 && (
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedReelCategory("all")}
+                        style={{
+                          padding: "6px 14px",
+                          borderRadius: "20px",
+                          border: `1px solid ${selectedReelCategory === "all" ? C.acid : C.border}`,
+                          background: selectedReelCategory === "all" ? C.acidBadge : (isLight ? "rgba(0,0,0,0.04)" : "rgba(255,255,255,0.05)"),
+                          color: selectedReelCategory === "all" ? "#000" : C.text,
+                          fontWeight: selectedReelCategory === "all" ? 700 : 500,
+                          fontSize: "0.78rem",
+                          cursor: "pointer",
+                          transition: "all 0.25s",
+                          boxShadow: selectedReelCategory === "all" ? `0 0 14px ${C.acidGlow}` : "none",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "6px"
+                        }}
+                      >
+                        <span>All</span>
+                        <span style={{ fontSize: "0.7rem", opacity: selectedReelCategory === "all" ? 0.8 : 0.55 }}>
+                          ({dynamicReels.length})
+                        </span>
+                      </button>
+
+                      {reelCategoriesWithVideos.map((cat) => {
+                        const isSelected = selectedReelCategory.toLowerCase() === cat.name.toLowerCase();
+                        return (
+                          <button
+                            key={cat.name}
+                            type="button"
+                            onClick={() => setSelectedReelCategory(isSelected ? "all" : cat.name)}
+                            style={{
+                              padding: "6px 14px",
+                              borderRadius: "20px",
+                              border: `1px solid ${isSelected ? C.acid : C.border}`,
+                              background: isSelected ? C.acidBadge : (isLight ? "rgba(0,0,0,0.04)" : "rgba(255,255,255,0.05)"),
+                              color: isSelected ? "#000" : C.text,
+                              fontWeight: isSelected ? 700 : 500,
+                              fontSize: "0.78rem",
+                              cursor: "pointer",
+                              transition: "all 0.25s",
+                              boxShadow: isSelected ? `0 0 14px ${C.acidGlow}` : "none",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "6px"
+                            }}
+                          >
+                            <span>{cat.name}</span>
+                            <span style={{ fontSize: "0.7rem", opacity: isSelected ? 0.8 : 0.55 }}>
+                              ({cat.count})
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
             </Reveal>
           </div>
@@ -1643,6 +1740,7 @@ export default function Portfolio() {
             />
 
             <motion.div
+              key={selectedReelCategory}
               style={{
                 display: "flex",
                 width: "max-content",
@@ -1652,7 +1750,7 @@ export default function Portfolio() {
               animate={{ x: ["0%", "-50%"] }}
               transition={{ duration: 32, repeat: Infinity, ease: "linear" }}
             >
-              {[...dynamicReels, ...dynamicReels].map((reel, idx) => (
+              {carouselReels.map((reel, idx) => (
                 <div
                   key={idx}
                   className="reel-cluster-card"
