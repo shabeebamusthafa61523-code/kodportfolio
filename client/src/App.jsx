@@ -1289,6 +1289,7 @@ export default function Portfolio() {
 
           @media (max-width: 1400px) {
             section { padding-left: 5vw !important; padding-right: 5vw !important; }
+            #reels { padding-left: 0 !important; padding-right: 0 !important; }
             .hero-section {
               min-height: auto !important;
               justify-content: flex-start !important;
@@ -1376,7 +1377,7 @@ export default function Portfolio() {
             .cs-logo-area { width: 110px; height: 110px; }
             .cs-sector { margin-left: 0 !important; }
             .trusted-layout { grid-template-columns: 1fr !important; gap: 2rem !important; }
-            .trusted-header { padding-right: 0 !important; border-right: none !important; border-bottom: 1px solid ${C.rule} !important; padding-bottom: 1.5rem !important; }
+            .trusted-header { padding-left: 0 !important; padding-right: 0 !important; border-right: none !important; border-bottom: 1px solid ${C.rule} !important; padding-bottom: 1.5rem !important; }
             .trusted-logos-container { padding-top: 1.8rem !important; }
             .contact-form-row { grid-template-columns: 1fr !important; }
             .svc-num { font-size: 2.2rem !important; min-width: 3.2rem !important; }
@@ -1711,7 +1712,7 @@ export default function Portfolio() {
         {/* ── STRATEGIC ALLIANCES / TRUSTED BY ── */}
         <section style={{ padding: "clamp(3.5rem, 8vh, 10vh) 0", background: "transparent", overflow: "hidden", width: "100%", maxWidth: "100vw", boxSizing: "border-box" }}>
           <div className="trusted-layout" style={{ display: "grid", gridTemplateColumns: "0.85fr 1.15fr", alignItems: "center", width: "100%" }}>
-            <div className="trusted-header" style={{ padding: "0 6vw", borderRight: `1px solid ${C.rule}`, background: "transparent" }}>
+            <div className="trusted-header" style={{ padding: "0 6vw 0 0", paddingLeft: 0, borderRight: `1px solid ${C.rule}`, background: "transparent" }}>
               <Reveal>
                 <p style={{ fontSize: "0.75rem", letterSpacing: "0.3em", textTransform: "uppercase", color: C.acid, marginBottom: "1rem", fontWeight: 600 }}>
                   Strategic Alliances
@@ -1787,7 +1788,7 @@ export default function Portfolio() {
 
         {/* ── CLUSTERED AUTOSCROLLING REELS & SHORT-FORM VIDEO SHOWCASE ── */}
         <section id="reels" style={{ padding: "clamp(3.5rem, 8vh, 10vh) 0 clamp(2.5rem, 6vh, 8vh)", background: "transparent", overflow: "hidden", width: "100%", maxWidth: "100vw", boxSizing: "border-box" }}>
-          <div style={{ padding: "0 6vw" }}>
+          <div style={{ padding: "0 clamp(1.25rem, 5vw, 6vw)", boxSizing: "border-box" }}>
             <Reveal>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1.5rem", marginBottom: "3.5rem" }}>
                 <div>
