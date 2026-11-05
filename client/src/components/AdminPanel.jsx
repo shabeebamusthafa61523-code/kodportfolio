@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, Plus, Trash2, Edit2, Upload, ExternalLink, RefreshCw, 
@@ -83,6 +83,26 @@ export default function AdminPanel({
   // Modal forms state
   const [editingItem, setEditingItem] = useState(null);
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const formRef = useRef(null);
+  const mainScrollRef = useRef(null);
+
+  const scrollToForm = () => {
+    setTimeout(() => {
+      if (formRef.current) {
+        formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const firstInput = formRef.current.querySelector('input:not([type="hidden"]):not([type="file"])');
+        if (firstInput) firstInput.focus();
+      } else if (mainScrollRef.current) {
+        mainScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 70);
+  };
+
+  useEffect(() => {
+    if (editingItem && isAddOpen) {
+      scrollToForm();
+    }
+  }, [editingItem, isAddOpen]);
 
   // Form states
   const [logoForm, setLogoForm] = useState({ name: '', src: '' });
@@ -963,6 +983,7 @@ export default function AdminPanel({
 
       {/* ── Full Page Workspace ── */}
       <main
+        ref={mainScrollRef}
         style={{
           flex: 1,
           overflowY: 'auto',
@@ -998,6 +1019,7 @@ export default function AdminPanel({
                     setEditingItem(null);
                     setLogoForm({ name: '', src: '' });
                     setIsAddOpen(true);
+                    scrollToForm();
                   }}
                   style={{
                     display: 'flex',
@@ -1021,6 +1043,7 @@ export default function AdminPanel({
               {/* Add / Edit Form Modal Inline */}
               {isAddOpen && (
                 <form
+                  ref={formRef}
                   onSubmit={handleSaveLogo}
                   style={{
                     background: adminTheme.cardBg,
@@ -1213,6 +1236,7 @@ export default function AdminPanel({
                             setEditingItem(logoItem);
                             setLogoForm({ name, src });
                             setIsAddOpen(true);
+                            scrollToForm();
                           }}
                           style={{
                             padding: '0.35rem 0.7rem',
@@ -1280,8 +1304,9 @@ export default function AdminPanel({
                 <button
                   onClick={() => {
                     setEditingItem(null);
-                    setReelForm({ title: '', creator: 'Fathima Shiya Hamza', avatar: 'FS', url: '', thumb: '', category: reelCategories[0]?.name || 'Commercial Ads' });
+                    setReelForm({ title: '', creator: 'Fathima Shiya Hamza', avatar: 'FS', url: '', thumb: '', category: reelCategories[0]?.name || 'Reels' });
                     setIsAddOpen(true);
+                    scrollToForm();
                   }}
                   style={{
                     display: 'flex',
@@ -1305,6 +1330,7 @@ export default function AdminPanel({
               {/* Add / Edit Reel Form */}
               {isAddOpen && (
                 <form
+                  ref={formRef}
                   onSubmit={handleSaveReel}
                   style={{
                     background: adminTheme.cardBg,
@@ -1565,9 +1591,10 @@ export default function AdminPanel({
                               avatar: reel.avatar,
                               url: reel.url,
                               thumb: reel.thumb,
-                              category: reel.category || (reelCategories[0]?.name || 'Commercial Ads')
+                              category: reel.category || (reelCategories[0]?.name || 'Reels')
                             });
                             setIsAddOpen(true);
+                            scrollToForm();
                           }}
                           style={{
                             flex: 1,
@@ -1628,6 +1655,7 @@ export default function AdminPanel({
                     setEditingItem(null);
                     setPosterForm({ title: '', alt: '', src: '', campaignTag: 'Visual Campaign' });
                     setIsAddOpen(true);
+                    scrollToForm();
                   }}
                   style={{
                     display: 'flex',
@@ -1651,6 +1679,7 @@ export default function AdminPanel({
               {/* Add / Edit Poster Form */}
               {isAddOpen && (
                 <form
+                  ref={formRef}
                   onSubmit={handleSavePoster}
                   style={{
                     background: adminTheme.cardBg,
@@ -1829,6 +1858,7 @@ export default function AdminPanel({
                               campaignTag: poster.campaignTag || 'Visual Campaign'
                             });
                             setIsAddOpen(true);
+                            scrollToForm();
                           }}
                           style={{
                             flex: 1,
