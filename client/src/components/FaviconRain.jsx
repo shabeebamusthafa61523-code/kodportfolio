@@ -53,21 +53,37 @@ export default function FaviconRain({
 
     // Initialize particles
     const particles = [];
+    let isInitialized = false;
+
     const initParticles = (w, h) => {
+      if (isInitialized && particles.length > 0) {
+        // Keep active particles on resize without resetting their fall
+        particles.forEach((p) => {
+          if (p.x > w) p.x = Math.random() * w;
+        });
+        return;
+      }
+      isInitialized = true;
       particles.length = 0;
       for (let i = 0; i < count; i++) {
-        // Randomize initial positions throughout the canvas height for immediate immersion
-        particles.push(createParticle(w, h, true));
+        // Cascade start: staggered above viewport so screen begins empty, then showers down
+        particles.push(createParticle(w, h, true, i, count));
       }
     };
 
-    function createParticle(w, h, initialSpread = false) {
+    function createParticle(w, h, isCascadeStart = false, index = 0, total = 1) {
       const size = minSize + Math.random() * (maxSize - minSize);
       // Weight / parallax: larger icons fall slightly faster
       const speed = 0.95 + ((size - minSize) / (maxSize - minSize || 1)) * 1.3 + Math.random() * 0.5;
+
+      // Stagger above the screen when opening so it pours down as an initial wave
+      const initialY = isCascadeStart
+        ? -35 - (index / total) * (h ? Math.min(h * 0.85, 600) : 500) - Math.random() * 60
+        : -Math.random() * 120 - 30;
+
       return {
         x: Math.random() * (w || 800),
-        y: initialSpread ? Math.random() * (h || 600) : -Math.random() * 120 - 30,
+        y: initialY,
         size,
         speed,
         rotation: Math.random() * Math.PI * 2,
