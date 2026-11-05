@@ -1288,12 +1288,9 @@ export default function Portfolio() {
           }
 
           @media (max-width: 1024px) {
-            section { padding-left: 5vw !important; padding-right: 5vw !important; }
             .hero-section {
               min-height: auto !important;
               justify-content: flex-start !important;
-              padding-top: 100px !important;
-              padding-bottom: 30px !important;
             }
             .svc-row { flex-direction: column !important; align-items: flex-start !important; gap: 1rem !important; }
             .cs-img-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
@@ -1303,21 +1300,14 @@ export default function Portfolio() {
             #about {
               grid-template-columns: 1fr !important;
               gap: 2rem !important;
-              padding: clamp(2.5rem, 5vh, 4rem) 5vw !important;
             }
             #vision > div {
               grid-template-columns: 1fr !important;
               gap: 2rem !important;
             }
-            #vision {
-              padding: clamp(2.5rem, 5vh, 4rem) 5vw !important;
-            }
             #contact > div {
               grid-template-columns: 1fr !important;
               gap: 2.5rem !important;
-            }
-            #contact {
-              padding: clamp(2.5rem, 5vh, 4rem) 5vw !important;
             }
             .desktop-nav {
               display: none !important;
@@ -1338,10 +1328,6 @@ export default function Portfolio() {
             .hero-section {
               min-height: auto !important;
               justify-content: flex-start !important;
-              padding-top: 85px !important;
-              padding-bottom: 20px !important;
-              padding-left: 5vw !important;
-              padding-right: 5vw !important;
             }
             .hero-logo-img {
               height: clamp(75px, 16vw, 110px) !important;
@@ -1577,13 +1563,15 @@ export default function Portfolio() {
             }}
           />
 
-          {/* Falling Favicon Particle Rain */}
-          <FaviconRain
-            density={55}
-            isLight={isLight}
-            interactive={true}
-            iconSrc="/favicon.ico"
-          />
+          {/* Falling Favicon Particle Rain (Desktop only) */}
+          {!isMobile && (
+            <FaviconRain
+              density={55}
+              isLight={isLight}
+              interactive={true}
+              iconSrc="/favicon.ico"
+            />
+          )}
 
           {/* ── HERO LOGO (MORPHS INTO NAVBAR ON SCROLL & 5-CLICK SECRET TRIGGER) ── */}
           <motion.div
