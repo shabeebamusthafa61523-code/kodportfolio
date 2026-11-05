@@ -651,24 +651,6 @@ const ReelCard = ({ reel, onClick, isStatic, isLight }) => {
         >
           {reel.creator || "KOD.BRAND"}
         </span>
-        {reel.category && (
-          <span
-            style={{
-              marginLeft: "auto",
-              fontSize: "0.62rem",
-              fontWeight: 700,
-              textTransform: "uppercase",
-              letterSpacing: "0.04em",
-              padding: "2px 6px",
-              borderRadius: "4px",
-              background: "rgba(0,0,0,0.08)",
-              color: "#333",
-              whiteSpace: "nowrap"
-            }}
-          >
-            {reel.category}
-          </span>
-        )}
       </div>
 
       {/* 9:16 Video Canvas Poster */}
