@@ -86,12 +86,26 @@ export default function AdminPanel({
 
   // Form states
   const [logoForm, setLogoForm] = useState({ name: '', src: '' });
+  const [reelCategories, setReelCategories] = useState([
+    { _id: 'cat-1', name: 'Commercial Ads' },
+    { _id: 'cat-2', name: 'Short-Form Reels' },
+    { _id: 'cat-3', name: 'Product Showcase' },
+    { _id: 'cat-4', name: 'Brand Story' },
+    { _id: 'cat-5', name: 'Behind The Scenes' }
+  ]);
+  const [isManageCategoryOpen, setIsManageCategoryOpen] = useState(false);
+  const [newCatName, setNewCatName] = useState('');
+  const [editingCatId, setEditingCatId] = useState(null);
+  const [editingCatName, setEditingCatName] = useState('');
+  const [catActionLoading, setCatActionLoading] = useState(false);
+
   const [reelForm, setReelForm] = useState({
     title: '',
     creator: 'Fathima Shiya Hamza',
     avatar: 'FS',
     url: '',
-    thumb: ''
+    thumb: '',
+    category: 'Commercial Ads'
   });
   const [posterForm, setPosterForm] = useState({
     title: '',
@@ -117,6 +131,23 @@ export default function AdminPanel({
     setStatusMsg({ text: msg, isError });
     setTimeout(() => setStatusMsg(null), 3500);
   };
+
+  // Fetch Reel Categories from API
+  React.useEffect(() => {
+    if (!isOpen) return;
+    fetch(apiUrl('/api/reel-categories'))
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setReelCategories(data);
+          setReelForm((prev) => ({
+            ...prev,
+            category: prev.category || data[0].name
+          }));
+        }
+      })
+      .catch((err) => console.warn('Reel categories fetch error:', err.message));
+  }, [isOpen]);
 
   // ── Universal File Upload Helper ──────────────────────────────────────────
   const handleFileUpload = async (file, onUploaded, type = 'general') => {
@@ -267,6 +298,125 @@ export default function AdminPanel({
     showNotification('Partner logo removed from ticker.');
   };
 
+  // ── Reel Categories CRUD ────────────────────────────────────────────────
+  const handleAddCategory = async (e) => {
+    if (e) e.preventDefault();
+    if (!newCatName || !newCatName.trim()) return;
+    const name = newCatName.trim();
+    if (reelCategories.some((c) => c.name.toLowerCase() === name.toLowerCase())) {
+      showNotification(`Category "${name}" already exists`, true);
+      return;
+    }
+
+    setCatActionLoading(true);
+    try {
+      const res = await fetch(apiUrl('/api/reel-categories'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to create category');
+      setReelCategories((prev) => [...prev, data]);
+      setReelForm((prev) => ({ ...prev, category: data.name }));
+      setNewCatName('');
+      showNotification(`Added category: "${name}"`);
+    } catch (err) {
+      console.warn('API error, using local fallback:', err.message);
+      const localCat = { _id: 'local-' + Date.now(), name };
+      setReelCategories((prev) => [...prev, localCat]);
+      setReelForm((prev) => ({ ...prev, category: name }));
+      setNewCatName('');
+      showNotification(`Added category: "${name}" (local)`);
+    } finally {
+      setCatActionLoading(false);
+    }
+  };
+
+  const handleSaveEditCategory = async (catId) => {
+    if (!editingCatName || !editingCatName.trim()) return;
+    const trimmed = editingCatName.trim();
+    const oldCat = reelCategories.find((c) => (c._id || c.id) === catId);
+    const oldName = oldCat ? oldCat.name : '';
+
+    setCatActionLoading(true);
+    try {
+      const res = await fetch(apiUrl(`/api/reel-categories/${catId}`), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: trimmed })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to update category');
+      setReelCategories((prev) =>
+        prev.map((c) => ((c._id || c.id) === catId ? data : c))
+      );
+      if (reelForm.category === oldName) {
+        setReelForm((prev) => ({ ...prev, category: trimmed }));
+      }
+      setReels((prev) =>
+        prev.map((r) => (r.category === oldName ? { ...r, category: trimmed } : r))
+      );
+      setEditingCatId(null);
+      setEditingCatName('');
+      showNotification(`Updated category to "${trimmed}"`);
+    } catch (err) {
+      console.warn('API error, using local fallback:', err.message);
+      setReelCategories((prev) =>
+        prev.map((c) => ((c._id || c.id) === catId ? { ...c, name: trimmed } : c))
+      );
+      if (reelForm.category === oldName) {
+        setReelForm((prev) => ({ ...prev, category: trimmed }));
+      }
+      setReels((prev) =>
+        prev.map((r) => (r.category === oldName ? { ...r, category: trimmed } : r))
+      );
+      setEditingCatId(null);
+      setEditingCatName('');
+      showNotification(`Updated category to "${trimmed}" (local)`);
+    } finally {
+      setCatActionLoading(false);
+    }
+  };
+
+  const handleDeleteCategory = async (cat) => {
+    const catId = cat._id || cat.id;
+    if (!window.confirm(`Delete category "${cat.name}"? Existing reels will be reassigned.`)) return;
+
+    setCatActionLoading(true);
+    try {
+      const res = await fetch(apiUrl(`/api/reel-categories/${catId}`), {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete category');
+      const remaining = reelCategories.filter((c) => (c._id || c.id) !== catId);
+      setReelCategories(remaining);
+      const fallbackName = data.reassignedTo || (remaining[0] ? remaining[0].name : 'General');
+      if (reelForm.category === cat.name) {
+        setReelForm((prev) => ({ ...prev, category: fallbackName }));
+      }
+      setReels((prev) =>
+        prev.map((r) => (r.category === cat.name ? { ...r, category: fallbackName } : r))
+      );
+      showNotification(`Deleted category "${cat.name}"`);
+    } catch (err) {
+      console.warn('API error, using local fallback:', err.message);
+      const remaining = reelCategories.filter((c) => (c._id || c.id) !== catId);
+      setReelCategories(remaining);
+      const fallbackName = remaining[0] ? remaining[0].name : 'General';
+      if (reelForm.category === cat.name) {
+        setReelForm((prev) => ({ ...prev, category: fallbackName }));
+      }
+      setReels((prev) =>
+        prev.map((r) => (r.category === cat.name ? { ...r, category: fallbackName } : r))
+      );
+      showNotification(`Deleted category "${cat.name}" (local)`);
+    } finally {
+      setCatActionLoading(false);
+    }
+  };
+
   // ── 2. REELS CRUD ────────────────────────────────────────────────────────
   const handleSaveReel = async (e) => {
     e.preventDefault();
@@ -310,7 +460,7 @@ export default function AdminPanel({
       }
       setIsAddOpen(false);
       setEditingItem(null);
-      setReelForm({ title: '', creator: 'Fathima Shiya Hamza', avatar: 'FS', url: '', thumb: '' });
+      setReelForm({ title: '', creator: 'Fathima Shiya Hamza', avatar: 'FS', url: '', thumb: '', category: reelCategories[0]?.name || 'Commercial Ads' });
     } catch (err) {
       console.warn('Reels API warning, using local fallback:', err.message);
       if (editingItem) {
@@ -1130,7 +1280,7 @@ export default function AdminPanel({
                 <button
                   onClick={() => {
                     setEditingItem(null);
-                    setReelForm({ title: '', creator: 'Fathima Shiya Hamza', avatar: 'FS', url: '', thumb: '' });
+                    setReelForm({ title: '', creator: 'Fathima Shiya Hamza', avatar: 'FS', url: '', thumb: '', category: reelCategories[0]?.name || 'Commercial Ads' });
                     setIsAddOpen(true);
                   }}
                   style={{
@@ -1181,6 +1331,50 @@ export default function AdminPanel({
                         onChange={(e) => setReelForm({ ...reelForm, title: e.target.value })}
                         style={{ ...inputStyle, width: '100%' }}
                       />
+                    </div>
+
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                        <label style={{ fontSize: '0.75rem', color: adminTheme.textMuted }}>
+                          Category
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => setIsManageCategoryOpen(true)}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 4,
+                            background: isLight ? 'rgba(0,0,0,0.06)' : 'rgba(196,236,13,0.12)',
+                            border: `1px solid ${isLight ? 'rgba(0,0,0,0.15)' : C.acid}`,
+                            color: isLight ? '#000' : C.acid,
+                            borderRadius: '12px',
+                            padding: '2px 8px',
+                            fontSize: '0.72rem',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                          }}
+                          title="Add, edit, or delete categories"
+                        >
+                          <Settings size={12} /> + Manage
+                        </button>
+                      </div>
+                      <select
+                        value={reelForm.category || (reelCategories[0]?.name || 'Commercial Ads')}
+                        onChange={(e) => setReelForm({ ...reelForm, category: e.target.value })}
+                        style={{ ...inputStyle, width: '100%', cursor: 'pointer' }}
+                      >
+                        {reelCategories.map((cat) => (
+                          <option
+                            key={cat._id || cat.id || cat.name}
+                            value={cat.name}
+                            style={{ background: isLight ? '#ffffff' : '#141622', color: isLight ? '#000000' : '#ffffff' }}
+                          >
+                            {cat.name}
+                          </option>
+                        ))}
+                      </select>
                     </div>
 
                     <div>
@@ -1331,8 +1525,22 @@ export default function AdminPanel({
 
                     <div style={{ padding: '1rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                       <div>
-                        <div style={{ fontSize: '0.72rem', color: C.acid, fontWeight: 700, textTransform: 'uppercase' }}>
-                          {reel.creator}
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 4, flexWrap: 'wrap' }}>
+                          <span style={{ fontSize: '0.72rem', color: C.acid, fontWeight: 700, textTransform: 'uppercase' }}>
+                            {reel.creator}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: '0.64rem',
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              background: isLight ? 'rgba(0,0,0,0.06)' : 'rgba(196,236,13,0.12)',
+                              color: isLight ? '#000' : C.acid,
+                              fontWeight: 700
+                            }}
+                          >
+                            {reel.category || 'Short-Form Reels'}
+                          </span>
                         </div>
                         <h4 style={{ margin: '0.3rem 0 0.5rem', fontSize: '0.88rem', fontWeight: 600, color: adminTheme.text, lineHeight: 1.3 }}>
                           {reel.title}
@@ -1356,7 +1564,8 @@ export default function AdminPanel({
                               creator: reel.creator,
                               avatar: reel.avatar,
                               url: reel.url,
-                              thumb: reel.thumb
+                              thumb: reel.thumb,
+                              category: reel.category || (reelCategories[0]?.name || 'Commercial Ads')
                             });
                             setIsAddOpen(true);
                           }}
@@ -1805,6 +2014,307 @@ export default function AdminPanel({
         onConfirmCrop={handleConfirmCrop}
         onSkipCrop={handleSkipCrop}
       />
+
+      {/* ── Manage Reel Categories Modal ── */}
+      <AnimatePresence>
+        {isManageCategoryOpen && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 100000,
+              background: 'rgba(0,0,0,0.75)',
+              backdropFilter: 'blur(8px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '1rem'
+            }}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setIsManageCategoryOpen(false);
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 15 }}
+              style={{
+                width: '100%',
+                maxWidth: '520px',
+                background: isLight ? '#ffffff' : '#141622',
+                border: `1px solid ${adminTheme.border}`,
+                borderRadius: '18px',
+                padding: 'clamp(1rem, 3vw, 1.6rem)',
+                boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
+                maxHeight: '88vh',
+                display: 'flex',
+                flexDirection: 'column'
+              }}
+            >
+              {/* Modal Header */}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '1.2rem',
+                  paddingBottom: '0.8rem',
+                  borderBottom: `1px solid ${adminTheme.border}`
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: '10px',
+                      background: 'rgba(196,236,13,0.15)',
+                      color: C.acid,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <Layers size={18} />
+                  </div>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: adminTheme.text }}>
+                      Manage Reel Categories
+                    </h3>
+                    <p style={{ margin: '2px 0 0', fontSize: '0.72rem', color: adminTheme.textMuted }}>
+                      Add, rename, or delete video showcase categories
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsManageCategoryOpen(false)}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: adminTheme.textMuted,
+                    cursor: 'pointer',
+                    padding: 6,
+                    borderRadius: '8px'
+                  }}
+                  title="Close"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Add New Category Form */}
+              <form onSubmit={handleAddCategory} style={{ marginBottom: '1.2rem' }}>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: adminTheme.text, marginBottom: 6 }}>
+                  Add New Category
+                </label>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <input
+                    type="text"
+                    placeholder="e.g. Brand Campaigns, Customer Reviews..."
+                    value={newCatName}
+                    onChange={(e) => setNewCatName(e.target.value)}
+                    style={{ ...inputStyle, flex: 1 }}
+                  />
+                  <button
+                    type="submit"
+                    disabled={catActionLoading || !newCatName.trim()}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      padding: '0 1.1rem',
+                      borderRadius: '8px',
+                      background: C.acidBadge,
+                      color: '#000',
+                      border: 'none',
+                      fontWeight: 700,
+                      fontSize: '0.8rem',
+                      cursor: newCatName.trim() ? 'pointer' : 'not-allowed',
+                      opacity: newCatName.trim() ? 1 : 0.6,
+                      flexShrink: 0
+                    }}
+                  >
+                    <Plus size={15} /> Add
+                  </button>
+                </div>
+              </form>
+
+              {/* Existing Categories List */}
+              <div style={{ flex: 1, overflowY: 'auto', paddingRight: 4, minHeight: '140px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: adminTheme.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Available Categories ({reelCategories.length})
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {reelCategories.map((cat) => {
+                    const catId = cat._id || cat.id;
+                    const isEditing = editingCatId === catId;
+                    const reelCount = reels.filter((r) => r.category === cat.name).length;
+
+                    return (
+                      <div
+                        key={catId}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '0.65rem 0.9rem',
+                          borderRadius: '10px',
+                          background: isLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.03)',
+                          border: `1px solid ${adminTheme.border}`
+                        }}
+                      >
+                        {isEditing ? (
+                          <div style={{ display: 'flex', gap: 6, flex: 1, marginRight: 8 }}>
+                            <input
+                              type="text"
+                              value={editingCatName}
+                              onChange={(e) => setEditingCatName(e.target.value)}
+                              autoFocus
+                              style={{ ...inputStyle, padding: '0.35rem 0.6rem', fontSize: '0.82rem', flex: 1 }}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleSaveEditCategory(catId);
+                                if (e.key === 'Escape') setEditingCatId(null);
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleSaveEditCategory(catId)}
+                              style={{
+                                background: C.acidBadge,
+                                border: 'none',
+                                color: '#000',
+                                borderRadius: '6px',
+                                padding: '0 8px',
+                                cursor: 'pointer',
+                                fontWeight: 700,
+                                fontSize: '0.75rem'
+                              }}
+                              title="Save Changes"
+                            >
+                              <Check size={14} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setEditingCatId(null)}
+                              style={{
+                                background: 'transparent',
+                                border: `1px solid ${adminTheme.inputBorder}`,
+                                color: adminTheme.textMuted,
+                                borderRadius: '6px',
+                                padding: '0 8px',
+                                cursor: 'pointer'
+                              }}
+                              title="Cancel"
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        ) : (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, overflow: 'hidden' }}>
+                            <span style={{ fontSize: '0.86rem', fontWeight: 600, color: adminTheme.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {cat.name}
+                            </span>
+                            <span
+                              style={{
+                                fontSize: '0.68rem',
+                                padding: '2px 7px',
+                                borderRadius: '10px',
+                                background: isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.08)',
+                                color: adminTheme.textMuted,
+                                flexShrink: 0
+                              }}
+                            >
+                              {reelCount} {reelCount === 1 ? 'reel' : 'reels'}
+                            </span>
+                          </div>
+                        )}
+
+                        {!isEditing && (
+                          <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingCatId(catId);
+                                setEditingCatName(cat.name);
+                              }}
+                              style={{
+                                background: 'transparent',
+                                border: `1px solid ${adminTheme.inputBorder}`,
+                                color: adminTheme.text,
+                                borderRadius: '6px',
+                                padding: '4px 7px',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 4,
+                                fontSize: '0.72rem'
+                              }}
+                              title="Rename category"
+                            >
+                              <Edit2 size={13} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteCategory(cat)}
+                              style={{
+                                background: 'rgba(239, 68, 68, 0.12)',
+                                border: 'none',
+                                color: '#ef4444',
+                                borderRadius: '6px',
+                                padding: '4px 7px',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 4,
+                                fontSize: '0.72rem'
+                              }}
+                              title="Delete category"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div
+                style={{
+                  marginTop: '1.2rem',
+                  paddingTop: '0.8rem',
+                  borderTop: `1px solid ${adminTheme.border}`,
+                  display: 'flex',
+                  justifyContent: 'flex-end'
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => setIsManageCategoryOpen(false)}
+                  style={{
+                    padding: '0.5rem 1.4rem',
+                    borderRadius: '8px',
+                    background: C.acidBadge,
+                    border: 'none',
+                    color: '#000',
+                    fontWeight: 700,
+                    fontSize: '0.82rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Done
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

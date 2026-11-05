@@ -5,7 +5,11 @@ const Reel = require('../models/Reel');
 // GET /api/reels
 router.get('/', async (req, res) => {
   try {
-    const reels = await Reel.find().sort({ order: 1, createdAt: 1 });
+    const filter = {};
+    if (req.query.category && req.query.category !== 'all') {
+      filter.category = req.query.category;
+    }
+    const reels = await Reel.find(filter).sort({ order: 1, createdAt: 1 });
     res.json(reels);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch reels', details: err.message });
@@ -15,7 +19,7 @@ router.get('/', async (req, res) => {
 // POST /api/reels
 router.post('/', async (req, res) => {
   try {
-    const { creator, avatar, title, thumb, url, rotation, marginTop, order } = req.body;
+    const { creator, avatar, title, thumb, url, rotation, marginTop, order, category } = req.body;
     if (!title || !thumb || !url) {
       return res.status(400).json({ error: 'Title, thumbnail URL, and video/reel URL are required' });
     }
@@ -30,6 +34,7 @@ router.post('/', async (req, res) => {
       title: title.trim(),
       thumb: thumb.trim(),
       url: url.trim(),
+      category: category ? category.trim() : 'Short-Form Reels',
       rotation: rotation || defaultTilts[count % defaultTilts.length],
       marginTop: marginTop || defaultMargins[count % defaultMargins.length],
       order: order !== undefined ? Number(order) : count + 1,
@@ -45,7 +50,7 @@ router.post('/', async (req, res) => {
 // PUT /api/reels/:id
 router.put('/:id', async (req, res) => {
   try {
-    const { creator, avatar, title, thumb, url, rotation, marginTop, order, isActive } = req.body;
+    const { creator, avatar, title, thumb, url, rotation, marginTop, order, isActive, category } = req.body;
     const reel = await Reel.findByIdAndUpdate(
       req.params.id,
       {
@@ -54,6 +59,7 @@ router.put('/:id', async (req, res) => {
         ...(title && { title: title.trim() }),
         ...(thumb && { thumb: thumb.trim() }),
         ...(url && { url: url.trim() }),
+        ...(category && { category: category.trim() }),
         ...(rotation && { rotation: rotation.trim() }),
         ...(marginTop && { marginTop: marginTop.trim() }),
         ...(order !== undefined && { order: Number(order) }),
