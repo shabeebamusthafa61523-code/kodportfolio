@@ -9,6 +9,7 @@ const ReelSchema = new mongoose.Schema(
     url: { type: String, required: true },
     rotation: { type: String, default: '0deg' },
     marginTop: { type: String, default: '0px' },
+    category: { type: String, default: 'Short-Form Reels', trim: true },
     order: { type: Number, default: 0 },
     isActive: { type: Boolean, default: true }
   },

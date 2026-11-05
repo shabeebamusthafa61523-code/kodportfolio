@@ -218,7 +218,7 @@ const reelsData = [
     marginTop: "26px",
     zIndex: 5
   }
-];
+].map(r => ({ ...r, category: r.category || 'Reels' }));
 
 // ── Pure Campaign Posters (No client metadata text, logos, or descriptions) ──
 const campaignPosters = [
@@ -596,6 +596,156 @@ const goals = [
   "Establish lasting partnerships through creativity and consistency."
 ];
 
+// ── Unified Reusable Reel Card Component ─────────────────────────────────────
+const ReelCard = ({ reel, onClick, isStatic, isLight }) => {
+  return (
+    <motion.div
+      className="reel-cluster-card"
+      onClick={onClick}
+      whileHover={{ y: -7, scale: isStatic ? 1.025 : 1.01 }}
+      transition={{ duration: 0.25 }}
+      style={{
+        width: "250px",
+        flexShrink: 0,
+        marginRight: isStatic ? "0px" : "-34px",
+        background: "#F6F4EA",
+        borderRadius: "16px",
+        padding: "10px 10px 12px 10px",
+        border: "1px solid rgba(0,0,0,0.12)",
+        boxShadow: `0 24px 50px rgba(0,0,0,${isLight ? (isStatic ? "0.16" : "0.22") : (isStatic ? "0.5" : "0.65")}), 0 8px 18px rgba(0,0,0,0.12)`,
+        transform: isStatic ? "none" : `rotate(${reel.rotation || "0deg"}) translateY(${reel.marginTop || "0px"})`,
+        zIndex: isStatic ? 1 : (reel.zIndex || 1),
+        cursor: "pointer",
+        userSelect: "none",
+        position: "relative"
+      }}
+    >
+      {/* Card Header: Circular Avatar Badge & Profile Handle */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, padding: "2px 2px" }}>
+        <div
+          style={{
+            width: 24,
+            height: 24,
+            borderRadius: "50%",
+            background: "#111111",
+            color: "#F6F4EA",
+            fontSize: "0.65rem",
+            fontWeight: 800,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0
+          }}
+        >
+          {reel.avatar || "KB"}
+        </div>
+        <span
+          style={{
+            fontSize: "0.78rem",
+            fontWeight: 700,
+            color: "#111111",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis"
+          }}
+        >
+          {reel.creator || "KOD.BRAND"}
+        </span>
+      </div>
+
+      {/* 9:16 Video Canvas Poster */}
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "350px",
+          borderRadius: "8px",
+          overflow: "hidden",
+          background: "#0a0a0a"
+        }}
+      >
+        <img
+          src={reel.thumb}
+          alt={reel.title || "Video thumbnail"}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            display: "block"
+          }}
+        />
+        
+        {/* Centered Glassmorphic Play Button Overlay */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "rgba(0,0,0,0.14)"
+          }}
+        >
+          <div
+            style={{
+              width: 52,
+              height: 52,
+              borderRadius: "50%",
+              background: "rgba(255,255,255,0.95)",
+              color: "#111111",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 10px 25px rgba(0,0,0,0.35)",
+              backdropFilter: "blur(6px)"
+            }}
+          >
+            <Play size={22} fill="#111111" style={{ marginLeft: 3 }} />
+          </div>
+        </div>
+
+        {/* Bottom-left reel icon badge */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 10,
+            left: 10,
+            width: 26,
+            height: 26,
+            borderRadius: "6px",
+            background: "rgba(255,255,255,0.9)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.25)"
+          }}
+        >
+          <Play size={12} fill="#111111" />
+        </div>
+      </div>
+
+      {/* Reaction Bar */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginTop: 8,
+          padding: "4px 4px 0",
+          color: "#111111"
+        }}
+      >
+        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          <Heart size={17} strokeWidth={2} />
+          <MessageCircle size={17} strokeWidth={2} />
+          <Send size={17} strokeWidth={2} />
+        </div>
+        <Bookmark size={17} strokeWidth={2} />
+      </div>
+    </motion.div>
+  );
+};
+
 export default function Portfolio() {
   // Set LIGHT theme as default
   const [theme, setTheme] = useState(() => localStorage.getItem("kodbrand-theme") || "light");
@@ -614,6 +764,43 @@ export default function Portfolio() {
   const [dynamicReels, setDynamicReels] = useState(reelsData);
   const [dynamicPosters, setDynamicPosters] = useState(campaignPosters);
   const [dynamicShowcases, setDynamicShowcases] = useState(featuredShowcases);
+
+  // ── Reels Category Filter State ──
+  const [selectedReelCategory, setSelectedReelCategory] = useState('all');
+
+  const reelCategoriesWithVideos = useMemo(() => {
+    const counts = {};
+    dynamicReels.forEach((reel) => {
+      const cat = (reel.category || 'Short-Form Reels').trim();
+      counts[cat] = (counts[cat] || 0) + 1;
+    });
+
+    return Object.keys(counts).map((name) => ({
+      name,
+      count: counts[name]
+    })).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+  }, [dynamicReels]);
+
+  const filteredReels = useMemo(() => {
+    if (selectedReelCategory === 'all') return dynamicReels;
+    return dynamicReels.filter(
+      (r) =>
+        (r.category || 'Short-Form Reels').trim().toLowerCase() ===
+        selectedReelCategory.trim().toLowerCase()
+    );
+  }, [dynamicReels, selectedReelCategory]);
+
+  const carouselReels = useMemo(() => {
+    if (!filteredReels || filteredReels.length === 0) return [];
+    let list = [...filteredReels];
+    while (list.length < 6) {
+      list = [...list, ...filteredReels];
+    }
+    return [...list, ...list];
+  }, [filteredReels]);
+
+  // If a category has fewer than 5 videos, no need to auto-slide; show static layout
+  const isAutoSlide = filteredReels.length >= 5;
 
   // ── Secret 5-Click Admin Access State ──
   const [logoClickCount, setLogoClickCount] = useState(0);
@@ -1607,198 +1794,185 @@ export default function Portfolio() {
                     Dynamic <span style={{ fontStyle: "italic", color: C.acid }}>Video Production</span>
                   </h2>
                 </div>
-                <p style={{ color: C.dim, maxWidth: 420, fontSize: "0.95rem", lineHeight: 1.6 }}>
-                  High-engagement 9:16 vertical storytelling, social video series, and commercials engineered for algorithm momentum and viral watch-time.
-                </p>
+                <div style={{ width: "100%", maxWidth: "100%" }}>
+                  <p style={{ color: C.dim, maxWidth: 540, fontSize: "0.95rem", lineHeight: 1.6, marginBottom: "1.2rem" }}>
+                    High-engagement 9:16 vertical storytelling, social video series, and commercials engineered for algorithm momentum and viral watch-time.
+                  </p>
+
+                  {/* Single-Line Dynamic Category Filter Pills */}
+                  {reelCategoriesWithVideos.length > 0 && (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "nowrap",
+                        overflowX: "auto",
+                        WebkitOverflowScrolling: "touch",
+                        scrollbarWidth: "none",
+                        msOverflowStyle: "none",
+                        gap: "8px",
+                        alignItems: "center",
+                        paddingBottom: "6px",
+                        width: "100%",
+                        maxWidth: "100%"
+                      }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setSelectedReelCategory("all")}
+                        style={{
+                          padding: "6px 14px",
+                          borderRadius: "20px",
+                          border: `1px solid ${selectedReelCategory === "all" ? C.acid : C.border}`,
+                          background: selectedReelCategory === "all" ? C.acidBadge : (isLight ? "rgba(0,0,0,0.04)" : "rgba(255,255,255,0.05)"),
+                          color: selectedReelCategory === "all" ? "#000" : C.text,
+                          fontWeight: selectedReelCategory === "all" ? 700 : 500,
+                          fontSize: "0.78rem",
+                          cursor: "pointer",
+                          transition: "all 0.25s",
+                          boxShadow: selectedReelCategory === "all" ? `0 0 14px ${C.acidGlow}` : "none",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          flexShrink: 0,
+                          whiteSpace: "nowrap"
+                        }}
+                      >
+                        <span>All</span>
+                        <span style={{ fontSize: "0.7rem", opacity: selectedReelCategory === "all" ? 0.8 : 0.55 }}>
+                          ({dynamicReels.length})
+                        </span>
+                      </button>
+
+                      {reelCategoriesWithVideos.map((cat) => {
+                        const isSelected = selectedReelCategory.toLowerCase() === cat.name.toLowerCase();
+                        return (
+                          <button
+                            key={cat.name}
+                            type="button"
+                            onClick={() => setSelectedReelCategory(isSelected ? "all" : cat.name)}
+                            style={{
+                              padding: "6px 14px",
+                              borderRadius: "20px",
+                              border: `1px solid ${isSelected ? C.acid : C.border}`,
+                              background: isSelected ? C.acidBadge : (isLight ? "rgba(0,0,0,0.04)" : "rgba(255,255,255,0.05)"),
+                              color: isSelected ? "#000" : C.text,
+                              fontWeight: isSelected ? 700 : 500,
+                              fontSize: "0.78rem",
+                              cursor: "pointer",
+                              transition: "all 0.25s",
+                              boxShadow: isSelected ? `0 0 14px ${C.acidGlow}` : "none",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "6px",
+                              flexShrink: 0,
+                              whiteSpace: "nowrap"
+                            }}
+                          >
+                            <span>{cat.name}</span>
+                            <span style={{ fontSize: "0.7rem", opacity: isSelected ? 0.8 : 0.55 }}>
+                              ({cat.count})
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
             </Reveal>
           </div>
 
-          {/* Clustered Overlapping Carousel Container with Autoscroll */}
-          <div style={{ position: "relative", width: "100%", padding: "4rem 0 5rem", overflow: "hidden" }}>
-            {/* Edge Vignette Fades */}
-            <div
-              style={{
-                position: "absolute",
-                left: 0,
-                top: 0,
-                bottom: 0,
-                width: "10%",
-                background: `linear-gradient(90deg, ${C.bg} 0%, transparent 100%)`,
-                zIndex: 25,
-                pointerEvents: "none"
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                right: 0,
-                top: 0,
-                bottom: 0,
-                width: "10%",
-                background: `linear-gradient(-90deg, ${C.bg} 0%, transparent 100%)`,
-                zIndex: 25,
-                pointerEvents: "none"
-              }}
-            />
-
-            <motion.div
-              style={{
-                display: "flex",
-                width: "max-content",
-                padding: "0 4rem",
-                alignItems: "center"
-              }}
-              animate={{ x: ["0%", "-50%"] }}
-              transition={{ duration: 32, repeat: Infinity, ease: "linear" }}
-            >
-              {[...dynamicReels, ...dynamicReels].map((reel, idx) => (
+          {/* Conditional Display: Static Centered Layout when < 5 videos, Autoscroll Marquee when >= 5 videos */}
+          <AnimatePresence mode="wait">
+            {!isAutoSlide ? (
+              <motion.div
+                key={`static-${selectedReelCategory}`}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  maxWidth: "1400px",
+                  margin: "0 auto",
+                  padding: "2.5rem 6vw 4.5rem",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                  gap: "clamp(1.5rem, 3.5vw, 2.5rem)",
+                  boxSizing: "border-box"
+                }}
+              >
+                {filteredReels.map((reel, idx) => (
+                  <ReelCard
+                    key={reel._id || reel.id || idx}
+                    reel={reel}
+                    onClick={() => setActiveReel(reel)}
+                    isStatic={true}
+                    isLight={isLight}
+                  />
+                ))}
+              </motion.div>
+            ) : (
+              <motion.div
+                key={`carousel-${selectedReelCategory}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                style={{ position: "relative", width: "100%", padding: "4rem 0 5rem", overflow: "hidden" }}
+              >
+                {/* Edge Vignette Fades */}
                 <div
-                  key={idx}
-                  className="reel-cluster-card"
-                  onClick={() => setActiveReel(reel)}
                   style={{
-                    width: "250px",
-                    flexShrink: 0,
-                    marginRight: "-34px", // Organic clustered overlap matching reference
-                    background: "#F6F4EA", // Authentic cream casing matching uploaded design
-                    borderRadius: "16px",
-                    padding: "10px 10px 12px 10px",
-                    border: "1px solid rgba(0,0,0,0.12)",
-                    boxShadow: `0 24px 50px rgba(0,0,0,${isLight ? "0.22" : "0.65"}), 0 8px 18px rgba(0,0,0,0.15)`,
-                    transform: `rotate(${reel.rotation}) translateY(${reel.marginTop})`,
-                    zIndex: reel.zIndex,
-                    cursor: "pointer",
-                    userSelect: "none",
-                    position: "relative"
+                    position: "absolute",
+                    left: 0,
+                    top: 0,
+                    bottom: 0,
+                    width: "10%",
+                    background: `linear-gradient(90deg, ${C.bg} 0%, transparent 100%)`,
+                    zIndex: 25,
+                    pointerEvents: "none"
                   }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    width: "10%",
+                    background: `linear-gradient(-90deg, ${C.bg} 0%, transparent 100%)`,
+                    zIndex: 25,
+                    pointerEvents: "none"
+                  }}
+                />
+
+                <motion.div
+                  style={{
+                    display: "flex",
+                    width: "max-content",
+                    padding: "0 4rem",
+                    alignItems: "center"
+                  }}
+                  animate={{ x: ["0%", "-50%"] }}
+                  transition={{ duration: 32, repeat: Infinity, ease: "linear" }}
                 >
-                  {/* Card Header: Circular Avatar Badge & Profile Handle */}
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, padding: "2px 2px" }}>
-                    <div
-                      style={{
-                        width: 24,
-                        height: 24,
-                        borderRadius: "50%",
-                        background: "#111111",
-                        color: "#F6F4EA",
-                        fontSize: "0.65rem",
-                        fontWeight: 800,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0
-                      }}
-                    >
-                      {reel.avatar}
-                    </div>
-                    <span
-                      style={{
-                        fontSize: "0.78rem",
-                        fontWeight: 700,
-                        color: "#111111",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis"
-                      }}
-                    >
-                      {reel.creator}
-                    </span>
-                  </div>
-
-                  {/* 9:16 Video Canvas Poster */}
-                  <div
-                    style={{
-                      position: "relative",
-                      width: "100%",
-                      height: "350px",
-                      borderRadius: "8px",
-                      overflow: "hidden",
-                      background: "#0a0a0a"
-                    }}
-                  >
-                    <img
-                      src={reel.thumb}
-                      alt={reel.title}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        display: "block"
-                      }}
+                  {carouselReels.map((reel, idx) => (
+                    <ReelCard
+                      key={idx}
+                      reel={reel}
+                      onClick={() => setActiveReel(reel)}
+                      isStatic={false}
+                      isLight={isLight}
                     />
-                    
-                    {/* Centered Glassmorphic Play Button Overlay */}
-                    <div
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        background: "rgba(0,0,0,0.14)"
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: 52,
-                          height: 52,
-                          borderRadius: "50%",
-                          background: "rgba(255,255,255,0.95)",
-                          color: "#111111",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          boxShadow: "0 10px 25px rgba(0,0,0,0.35)",
-                          backdropFilter: "blur(6px)"
-                        }}
-                      >
-                        <Play size={22} fill="#111111" style={{ marginLeft: 3 }} />
-                      </div>
-                    </div>
-
-                    {/* Bottom-left reel icon badge */}
-                    <div
-                      style={{
-                        position: "absolute",
-                        bottom: 10,
-                        left: 10,
-                        width: 26,
-                        height: 26,
-                        borderRadius: "6px",
-                        background: "rgba(255,255,255,0.9)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        boxShadow: "0 2px 8px rgba(0,0,0,0.25)"
-                      }}
-                    >
-                      <Play size={12} fill="#111111" />
-                    </div>
-                  </div>
-
-                  {/* Reaction Bar: Full Instagram Action Bar */}
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginTop: 8,
-                      padding: "4px 4px 0",
-                      color: "#111111"
-                    }}
-                  >
-                    <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                      <Heart size={17} strokeWidth={2} />
-                      <MessageCircle size={17} strokeWidth={2} />
-                      <Send size={17} strokeWidth={2} />
-                    </div>
-                    <Bookmark size={17} strokeWidth={2} />
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-          </div>
+                  ))}
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Subtle golden/acid accent progress line at bottom matching reference screenshot */}
           <div style={{ width: "100%", display: "flex", justifyContent: "center", marginTop: "2.5rem" }}>
