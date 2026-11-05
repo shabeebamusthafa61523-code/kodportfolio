@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 /**
  * FaviconRain Component
@@ -13,23 +13,11 @@ export default function FaviconRain({
   minSize = 11,
   maxSize = 22
 }) {
-  const [isMobileScreen, setIsMobileScreen] = useState(
-    typeof window !== 'undefined' ? window.innerWidth <= 768 : false
-  );
-
-  useEffect(() => {
-    const checkResize = () => setIsMobileScreen(window.innerWidth <= 768);
-    window.addEventListener('resize', checkResize);
-    return () => window.removeEventListener('resize', checkResize);
-  }, []);
-
   const canvasRef = useRef(null);
   const animationFrameRef = useRef(null);
   const isVisibleRef = useRef(true);
 
   useEffect(() => {
-    if (isMobileScreen) return;
-
     const canvas = canvasRef.current;
     if (!canvas) return;
 

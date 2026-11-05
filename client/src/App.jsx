@@ -1288,9 +1288,15 @@ export default function Portfolio() {
           }
 
           @media (max-width: 1024px) {
+            section { padding-left: 5vw !important; padding-right: 5vw !important; }
             .hero-section {
               min-height: auto !important;
               justify-content: flex-start !important;
+              padding-top: clamp(115px, 15vh, 150px) !important;
+              padding-bottom: 35px !important;
+            }
+            .hero-logo-box {
+              padding-top: clamp(1.2rem, 3vh, 2.2rem) !important;
             }
             .svc-row { flex-direction: column !important; align-items: flex-start !important; gap: 1rem !important; }
             .cs-img-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
@@ -1300,20 +1306,30 @@ export default function Portfolio() {
             #about {
               grid-template-columns: 1fr !important;
               gap: 2rem !important;
+              padding: clamp(2.5rem, 5vh, 4rem) 5vw !important;
             }
             #vision > div {
               grid-template-columns: 1fr !important;
               gap: 2rem !important;
             }
+            #vision {
+              padding: clamp(2.5rem, 5vh, 4rem) 5vw !important;
+            }
             #contact > div {
               grid-template-columns: 1fr !important;
               gap: 2.5rem !important;
+            }
+            #contact {
+              padding: clamp(2.5rem, 5vh, 4rem) 5vw !important;
             }
             .desktop-nav {
               display: none !important;
             }
             .mobile-menu-btn {
               display: flex !important;
+            }
+            .trusted-logos-container {
+              padding-top: 1.5rem !important;
             }
           }
           @media (min-width: 901px) {
@@ -1328,6 +1344,13 @@ export default function Portfolio() {
             .hero-section {
               min-height: auto !important;
               justify-content: flex-start !important;
+              padding-top: clamp(105px, 14vh, 135px) !important;
+              padding-bottom: 25px !important;
+              padding-left: 5vw !important;
+              padding-right: 5vw !important;
+            }
+            .hero-logo-box {
+              padding-top: clamp(1.5rem, 4vh, 2.8rem) !important;
             }
             .hero-logo-img {
               height: clamp(75px, 16vw, 110px) !important;
@@ -1354,6 +1377,7 @@ export default function Portfolio() {
             .cs-sector { margin-left: 0 !important; }
             .trusted-layout { grid-template-columns: 1fr !important; gap: 2rem !important; }
             .trusted-header { padding-right: 0 !important; border-right: none !important; border-bottom: 1px solid ${C.rule} !important; padding-bottom: 1.5rem !important; }
+            .trusted-logos-container { padding-top: 1.8rem !important; }
             .contact-form-row { grid-template-columns: 1fr !important; }
             .svc-num { font-size: 2.2rem !important; min-width: 3.2rem !important; }
             .fab-float { bottom: 16px !important; right: 16px !important; gap: 8px !important; }
@@ -1563,15 +1587,13 @@ export default function Portfolio() {
             }}
           />
 
-          {/* Falling Favicon Particle Rain (Desktop only) */}
-          {!isMobile && (
-            <FaviconRain
-              density={55}
-              isLight={isLight}
-              interactive={true}
-              iconSrc="/favicon.ico"
-            />
-          )}
+          {/* Falling Favicon Particle Rain */}
+          <FaviconRain
+            density={55}
+            isLight={isLight}
+            interactive={true}
+            iconSrc="/favicon.ico"
+          />
 
           {/* ── HERO LOGO (MORPHS INTO NAVBAR ON SCROLL & 5-CLICK SECRET TRIGGER) ── */}
           <motion.div
@@ -1703,7 +1725,7 @@ export default function Portfolio() {
               </Reveal>
             </div>
 
-            <div style={{ position: "relative", width: "100%", overflow: "hidden", background: "transparent" }}>
+            <div className="trusted-logos-container" style={{ position: "relative", width: "100%", overflow: "hidden", background: "transparent" }}>
               <div
                 style={{
                   position: "absolute",
