@@ -1287,16 +1287,16 @@ export default function Portfolio() {
             box-sizing: border-box;
           }
 
-          @media (max-width: 1200px) {
+          @media (max-width: 1400px) {
             section { padding-left: 5vw !important; padding-right: 5vw !important; }
             .hero-section {
               min-height: auto !important;
               justify-content: flex-start !important;
-              padding-top: clamp(125px, 16vh, 170px) !important;
-              padding-bottom: 35px !important;
+              padding-top: clamp(160px, 22vh, 230px) !important;
+              padding-bottom: 40px !important;
             }
             .hero-logo-box {
-              padding-top: clamp(1.8rem, 4vh, 3.2rem) !important;
+              padding-top: clamp(3.5rem, 8vh, 6rem) !important;
             }
             .svc-row { flex-direction: column !important; align-items: flex-start !important; gap: 1rem !important; }
             .cs-img-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
@@ -1329,7 +1329,7 @@ export default function Portfolio() {
               display: flex !important;
             }
             .trusted-logos-container {
-              padding-top: 1.8rem !important;
+              padding-top: 2rem !important;
             }
           }
           @media (min-width: 901px) {
@@ -1344,13 +1344,13 @@ export default function Portfolio() {
             .hero-section {
               min-height: auto !important;
               justify-content: flex-start !important;
-              padding-top: clamp(120px, 16vh, 155px) !important;
-              padding-bottom: 25px !important;
+              padding-top: clamp(150px, 20vh, 210px) !important;
+              padding-bottom: 30px !important;
               padding-left: 5vw !important;
               padding-right: 5vw !important;
             }
             .hero-logo-box {
-              padding-top: clamp(2.2rem, 5.5vh, 4rem) !important;
+              padding-top: clamp(3.5rem, 8vh, 6rem) !important;
             }
             .hero-logo-img {
               height: clamp(75px, 16vw, 110px) !important;
@@ -1397,7 +1397,7 @@ export default function Portfolio() {
             width: "100%",
             maxWidth: "100vw",
             boxSizing: "border-box",
-            padding: "0.85rem clamp(1rem, 4vw, 6vw)",
+            padding: "clamp(0.95rem, 2vw, 1.15rem) clamp(1rem, 4vw, 6vw)",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -1611,6 +1611,7 @@ export default function Portfolio() {
               transformOrigin: "bottom left",
               display: "inline-block",
               marginBottom: "1.2rem",
+              marginTop: isMobile ? "clamp(2.5rem, 6vh, 4.5rem)" : "0px",
               cursor: "pointer"
             }}
             initial={{ opacity: 0, y: 50, scale: 0.94 }}
