@@ -1,11 +1,20 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { motion, useScroll, useTransform, useMotionValueEvent, AnimatePresence } from "framer-motion";
+import { 
+  motion, 
+  useScroll, 
+  useTransform, 
+  useMotionValueEvent, 
+  AnimatePresence,
+  useMotionValue,
+  useSpring
+} from "framer-motion";
 import { 
   Mail, Phone, Instagram, Globe, Check, Copy, ArrowUp, Send, 
   Sun, Moon, Heart, MessageCircle, Bookmark, Play, X, ChevronLeft, ChevronRight, Shield, Menu 
 } from "lucide-react";
 import AdminPinModal from "./components/AdminPinModal";
 import AdminPanel from "./components/AdminPanel";
+import FaviconRain from "./components/FaviconRain";
 import { apiUrl } from "./utils/api";
 
 // ── Reusable Reveal Animation ────────────────────────────────────────────────
@@ -743,6 +752,37 @@ export default function Portfolio() {
   const navLogoScale = useTransform(scrollY, [180, 230], [0.85, 1]);
   const navLogoY = useTransform(scrollY, [180, 230], [8, 0]);
 
+  // Cursor-following lighting for Hero
+  const mouseX = useMotionValue(
+    typeof window !== "undefined" ? window.innerWidth * 0.65 : 600
+  );
+  const mouseY = useMotionValue(
+    typeof window !== "undefined" ? window.innerHeight * 0.35 : 280
+  );
+
+  // Smooth luxury spring physics
+  const springConfig = { damping: 28, stiffness: 140, mass: 0.6 };
+  const smoothX = useSpring(mouseX, springConfig);
+  const smoothY = useSpring(mouseY, springConfig);
+
+  const heroGlowOpacity = useTransform(scrollY, [0, 450], [1, 0]);
+
+  useEffect(() => {
+    if (isMobile) return;
+
+    const handleMouseMove = (e) => {
+      if (window.scrollY > (window.innerHeight || 800)) return;
+      const heroEl = document.getElementById("hero");
+      if (!heroEl) return;
+      const rect = heroEl.getBoundingClientRect();
+      mouseX.set(e.clientX - rect.left);
+      mouseY.set(e.clientY - rect.top);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [isMobile, mouseX, mouseY]);
+
   useEffect(() => {
     localStorage.setItem("kodbrand-theme", theme);
     document.documentElement.setAttribute("data-theme", theme);
@@ -1328,18 +1368,34 @@ export default function Portfolio() {
           id="hero"
           className="hero-section"
         >
-          <div
+          {/* Simple Cursor-Following Lighting */}
+          <motion.div
             className="hero-ambient-glow"
             style={{
               position: "absolute",
-              top: "25%",
-              right: "8%",
+              top: 0,
+              left: 0,
               width: 560,
               height: 560,
+              x: smoothX,
+              y: smoothY,
+              translateX: "-50%",
+              translateY: "-50%",
               borderRadius: "50%",
               background: `radial-gradient(circle, ${C.ambientGlow} 0%, transparent 70%)`,
-              pointerEvents: "none"
+              pointerEvents: "none",
+              zIndex: 0,
+              opacity: heroGlowOpacity,
+              willChange: "transform"
             }}
+          />
+
+          {/* Falling Favicon Particle Rain */}
+          <FaviconRain
+            density={55}
+            isLight={isLight}
+            interactive={true}
+            iconSrc="/favicon.ico"
           />
 
           {/* ── HERO LOGO (MORPHS INTO NAVBAR ON SCROLL & 5-CLICK SECRET TRIGGER) ── */}
