@@ -33,6 +33,23 @@ async function ensureSeedCategories() {
 router.get('/', async (req, res) => {
   try {
     await ensureSeedCategories();
+
+    // Auto-sync: ensure any category currently assigned to an existing reel is registered and manageable
+    const distinctOnReels = await Reel.distinct('category');
+    const existingCats = await ReelCategory.find();
+    const existingNames = new Set(existingCats.map((c) => c.name.toLowerCase()));
+
+    for (const catName of distinctOnReels) {
+      if (catName && !existingNames.has(catName.trim().toLowerCase())) {
+        await ReelCategory.create({
+          name: catName.trim(),
+          slug: catName.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          order: existingCats.length + 1
+        });
+        existingNames.add(catName.trim().toLowerCase());
+      }
+    }
+
     const categories = await ReelCategory.find().sort({ order: 1, createdAt: 1 });
     res.json(categories);
   } catch (err) {

@@ -218,7 +218,7 @@ const reelsData = [
     marginTop: "26px",
     zIndex: 5
   }
-];
+].map(r => ({ ...r, category: r.category || 'Reels' }));
 
 // ── Pure Campaign Posters (No client metadata text, logos, or descriptions) ──
 const campaignPosters = [
